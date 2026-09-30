@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "",
+    "FOUNDRY_PROJECT_ENDPOINT": "https://<resource-name>.services.ai.azure.com/api/projects/<project-name>",
+    "FOUNDRY_AGENT_NAME": "call-qa-reviewer"
+  }
+}

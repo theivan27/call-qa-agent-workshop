@@ -1,0 +1,5 @@
+# For the scripts in scripts/ (the web API has its own api/requirements.txt)
+azure-ai-projects>=2.3.0
+azure-identity
+openai
+python-dotenv

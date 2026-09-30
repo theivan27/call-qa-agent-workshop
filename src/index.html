@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Call QA Reviewer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>Call QA Reviewer</h1>
+      <p>Workshop sample: Northwind Bank calls handled by Contoso BPO</p>
+    </div>
+    <button type="button" id="new-chat" class="ghost">Start new review</button>
+  </header>
+
+  <main class="layout">
+    <aside class="calls" aria-labelledby="calls-title">
+      <h2 id="calls-title">Calls to review</h2>
+      <p class="hint">Pick a call to start a review.</p>
+      <ul id="call-list" class="call-list">
+        <li class="muted">Loading calls…</li>
+      </ul>
+    </aside>
+
+    <section class="chat" aria-labelledby="chat-title">
+      <h2 id="chat-title" class="visually-hidden">Conversation with the QA agent</h2>
+      <div id="messages" class="messages" aria-live="polite">
+        <div class="empty">
+          <p class="empty-title">Ask the agent to review a call.</p>
+          <p>It reads the transcript, scores it against the QA scorecard, checks the compliance
+            checklist, and can log scores, raise compliance flags and create coaching tasks.</p>
+        </div>
+      </div>
+
+      <div class="suggestions" aria-label="Suggested requests">
+        <button type="button" class="chip">Review call C-5531 and log the QA score.</button>
+        <button type="button" class="chip">Check call C-5533 against the compliance checklist and flag every breach.</button>
+        <button type="button" class="chip">Review call C-5535 and create a coaching task if one is needed.</button>
+        <button type="button" class="chip">Mark agent AG-103 as failed and notify HR.</button>
+      </div>
+
+      <form id="composer" class="composer">
+        <label for="input" class="visually-hidden">Message</label>
+        <textarea id="input" rows="2" placeholder="Ask about a call, for example: Review call C-5532." required></textarea>
+        <button type="submit" id="send">Send</button>
+      </form>
+    </section>
+
+    <aside class="activity" aria-labelledby="activity-title">
+      <h2 id="activity-title">What the agent did</h2>
+      <p class="hint">Every tool call and knowledge lookup, in order.</p>
+      <ol id="activity-list" class="ledger">
+        <li class="muted ledger-empty">Nothing yet. Tool calls appear here as the agent works.</li>
+      </ol>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+azure-functions
+azure-ai-projects>=2.3.0
+azure-identity
+openai

@@ -1,0 +1,106 @@
+{
+  "_note": "Fictional sample calls for the workshop. Northwind Bank and Contoso BPO are sample names. Any resemblance to real people or accounts is coincidental.",
+  "calls": [
+    {
+      "call_id": "C-5531",
+      "date": "2026-10-01",
+      "campaign": "collections",
+      "agent_id": "AG-102",
+      "agent_name": "Mark Dela Cruz",
+      "language": "Taglish",
+      "duration_min": 7,
+      "transcript": [
+        {"speaker": "Agent", "text": "Good morning po, this is Mark from Northwind Bank. Paalala lang po, this call is recorded for quality and training."},
+        {"speaker": "Agent", "text": "May I speak with Ms. Andrea Villanueva? Para po ma-verify, can I have your date of birth and the last four digits of your registered mobile number?"},
+        {"speaker": "Customer", "text": "Ako ito. March 14, 1990, and 4471."},
+        {"speaker": "Agent", "text": "Salamat po, verified na. Tumatawag po ako about your credit card payment that was due last September 25."},
+        {"speaker": "Customer", "text": "Oo, alam ko. Nawalan ako ng isang client this month kaya kulang ang budget. Here's my card number para sure ka: 4412 8890 1234 5678."},
+        {"speaker": "Agent", "text": "Naiintindihan ko po, mahirap talaga yan. Hindi niyo na po kailangang ibigay ang buong card number, okay na po tayo. Pwede po nating hatiin ang bayad: minimum amount due now, and the balance on October 15. Pwede rin po ang 3-month installment."},
+        {"speaker": "Customer", "text": "Sige, minimum muna ngayon then the rest on the 15th."},
+        {"speaker": "Agent", "text": "Noted po. You can pay through the Northwind mobile app, online banking, or any Northwind branch. Your reference number is PA-20261001-118. Summary po: minimum due today, balance on October 15. May iba pa po ba?"},
+        {"speaker": "Customer", "text": "Wala na, salamat Mark."},
+        {"speaker": "Agent", "text": "Salamat din po, Ms. Villanueva. Ingat po kayo."}
+      ]
+    },
+    {
+      "call_id": "C-5532",
+      "date": "2026-10-01",
+      "campaign": "collections",
+      "agent_id": "AG-101",
+      "agent_name": "Liza Reyes",
+      "language": "English",
+      "duration_min": 5,
+      "transcript": [
+        {"speaker": "Agent", "text": "Hi, is this Mr. Ramon Castillo?"},
+        {"speaker": "Customer", "text": "Yes, speaking."},
+        {"speaker": "Agent", "text": "I'm calling because your personal loan account ending 2290 is 45 days past due with an outstanding balance of 38,500 pesos."},
+        {"speaker": "Customer", "text": "Wait, who is this?"},
+        {"speaker": "Agent", "text": "Sorry, this is Liza from Northwind Bank collections. Can you confirm your birthday for me?"},
+        {"speaker": "Customer", "text": "June 2, 1985. I thought I set up auto-debit already."},
+        {"speaker": "Agent", "text": "I see the auto-debit failed because of insufficient funds. Would you be able to pay the past-due amount this week, or would a payment plan help?"},
+        {"speaker": "Customer", "text": "I can pay half on Friday and the rest next Friday."},
+        {"speaker": "Agent", "text": "That works. Please pay through the Northwind app or any branch. Your reference number is PA-20261001-122. So that's half this Friday and the rest next Friday. Thank you, Mr. Castillo."}
+      ]
+    },
+    {
+      "call_id": "C-5533",
+      "date": "2026-10-01",
+      "campaign": "collections",
+      "agent_id": "AG-103",
+      "agent_name": "Joy Santos",
+      "language": "Taglish",
+      "duration_min": 6,
+      "transcript": [
+        {"speaker": "Agent", "text": "Hello, Joy po from Northwind Bank, this call is recorded. Is this Mr. Paolo Garcia? For verification po, your date of birth and your mother's maiden name?"},
+        {"speaker": "Customer", "text": "Yes. August 9, 1992, Mendoza."},
+        {"speaker": "Agent", "text": "Thank you po. Tumatawag po ako tungkol sa overdue balance ng credit card ninyo, 60 days past due na po."},
+        {"speaker": "Customer", "text": "Wala pa talaga akong pambayad ngayon, next month pa sweldo ko."},
+        {"speaker": "Agent", "text": "Sir, kung hindi kayo magbabayad today, ipapa-kulong namin kayo. And tatawagan din namin ang office niyo para malaman ng boss niyo."},
+        {"speaker": "Customer", "text": "Ano? Pwede ba yan?"},
+        {"speaker": "Agent", "text": "Para mabilis, send niyo na lang po sa personal e-wallet ko, 0917 555 0142, at ako na bahala mag-post."},
+        {"speaker": "Customer", "text": "Hindi ako komportable diyan. Tatawag na lang ako sa hotline."},
+        {"speaker": "Agent", "text": "Okay po, bahala kayo."}
+      ]
+    },
+    {
+      "call_id": "C-5534",
+      "date": "2026-10-01",
+      "campaign": "card_services",
+      "agent_id": "AG-101",
+      "agent_name": "Liza Reyes",
+      "language": "English",
+      "duration_min": 4,
+      "transcript": [
+        {"speaker": "Agent", "text": "Thank you for calling Northwind Bank card services, this is Liza. This call is recorded for quality and training. How can I help?"},
+        {"speaker": "Customer", "text": "Hi, my card got damaged and the chip isn't working anymore."},
+        {"speaker": "Agent", "text": "I'm sorry about that, let's get you a replacement. For verification, may I have your full name, date of birth and the last four digits of your card?"},
+        {"speaker": "Customer", "text": "Carla Mendoza, November 30, 1988, and 7732."},
+        {"speaker": "Agent", "text": "Thank you, Ms. Mendoza, you're verified. I've requested a replacement card to your registered address. It usually arrives in 5 to 7 banking days, and your current card number stays the same."},
+        {"speaker": "Customer", "text": "Great. Is there a fee?"},
+        {"speaker": "Agent", "text": "No fee for a damaged-card replacement. Your reference number is CR-20261001-045. Anything else I can help with?"},
+        {"speaker": "Customer", "text": "That's all, thanks!"},
+        {"speaker": "Agent", "text": "You're welcome, Ms. Mendoza. Have a good day."}
+      ]
+    },
+    {
+      "call_id": "C-5535",
+      "date": "2026-10-01",
+      "campaign": "collections",
+      "agent_id": "AG-103",
+      "agent_name": "Joy Santos",
+      "language": "Taglish",
+      "duration_min": 5,
+      "transcript": [
+        {"speaker": "Agent", "text": "Good afternoon, Joy po from Northwind Bank. This call is recorded. Ms. Teresa Aquino po ba ito? Pa-verify po ng birthday at last four digits ng mobile number ninyo."},
+        {"speaker": "Customer", "text": "Ako nga. January 5, 1979, 2208."},
+        {"speaker": "Agent", "text": "Verified po. About po ito sa auto loan ninyo na 30 days past due."},
+        {"speaker": "Customer", "text": "Pasensya na, na-ospital kasi ang nanay ko nitong nakaraang linggo, doon napunta lahat ng pera namin."},
+        {"speaker": "Agent", "text": "Okay. So kailan po kayo magbabayad?"},
+        {"speaker": "Customer", "text": "Hindi ko pa alam... baka sa katapusan."},
+        {"speaker": "Agent", "text": "Kailangan po ng exact date. October 31 na lang po. You can pay via the Northwind app or any branch. Reference number PA-20261001-131."},
+        {"speaker": "Customer", "text": "Sige na nga."},
+        {"speaker": "Agent", "text": "Okay, bye po."}
+      ]
+    }
+  ]
+}
