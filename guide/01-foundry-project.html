@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Create the project &middot; Call QA Agent Workshop</title>
-  <meta name="description" content="Create a resource group, a Microsoft Foundry project and a model deployment in the portal.">
+  <meta name="description" content="Create a resource group, an AI Foundry project and a model deployment in the portal.">
   <link rel="stylesheet" href="guide.css">
   <script src="steps.js" defer></script>
 </head>
@@ -88,14 +88,33 @@
         also creates the underlying <strong>Foundry resource</strong> &mdash; the billable Azure thing
         the project sits on.
       </p>
+      <div class="warn">
+        <span class="note-title">Make sure you're in the new Foundry</span>
+        <p>
+          The portal has two experiences. <strong>Foundry (classic)</strong> is the older hub-based
+          one and its screens look nothing like the steps below &mdash; if your menus don't match
+          this guide, that is almost always why. Find the <strong>New Foundry</strong> toggle at the
+          top of the page and switch it <strong>on</strong> before you go any further.
+        </p>
+      </div>
       <ol>
         <li>Go to the Foundry portal at <a href="https://ai.azure.com" target="_blank" rel="noopener">ai.azure.com</a> and sign in with the same account.</li>
-        <li>Select <strong>+ Create new</strong>, then choose to create a <strong>Foundry project</strong>.</li>
+        <li>Check that the <strong>New Foundry</strong> toggle is <strong>on</strong>.</li>
         <li>
-          Before you confirm, open <strong>Advanced options</strong>. This matters &mdash; it's where
-          you point the new resource at the group you just made:
+          Your current project name sits in the <strong>upper-left corner</strong>. Select it, then
+          select <strong>Create new project</strong>. If this is your first time in Foundry you'll
+          be asked to create or search for a project instead &mdash; select
+          <strong>Create a new project</strong>.
+        </li>
+        <li>
+          Give the project a name, then open <strong>Advanced options</strong> before you confirm.
+          This matters &mdash; it's where you point the new resource at the group you just made:
         </li>
       </ol>
+      <!-- TODO verify in the live portal: Microsoft's docs list only Resource group and Location
+           under Advanced options. Confirm whether the Foundry resource name and Subscription fields
+           are still exposed here; if not, drop those two rows and say the portal names the
+           resource automatically. -->
       <table class="fields">
         <tbody>
           <tr><td>Project name</td><td><code>call-qa-project</code></td></tr>
@@ -106,7 +125,7 @@
         </tbody>
       </table>
       <ol start="4">
-        <li>Select <strong>Create</strong> and wait. This takes a minute or two.</li>
+        <li>Select <strong>Create project</strong> (shown as just <strong>Create</strong> in some views) and wait. This takes a minute or two — you're ready when the project's Home page appears.</li>
       </ol>
       <figure class="shot" data-shot="02-foundry-create-advanced">
         <img src="media/02-foundry-create-advanced.png" alt="The Foundry Create project dialog with Advanced options expanded, showing the resource group set to rg-call-qa-workshop" loading="lazy">
@@ -128,14 +147,14 @@
         refer to it by that name.
       </p>
       <ol>
-        <li>In your project, open <strong>Models + endpoints</strong> in the left navigation.</li>
-        <li>Select <strong>+ Deploy model</strong> &rarr; <strong>Deploy base model</strong>.</li>
-        <li>Search for <code>gpt-4.1-mini</code> and select it, then <strong>Confirm</strong>.</li>
+        <li>Select <strong>Discover</strong> in the upper-right navigation, then <strong>Models</strong> in the left pane.</li>
+        <li>Search for <code>gpt-4.1-mini</code> and select it.</li>
+        <li>Select <strong>Deploy</strong> &rarr; <strong>Default settings</strong>.</li>
         <li>
-          Leave the <strong>Deployment name</strong> as <code>gpt-4.1-mini</code>. If you change it,
-          write down what you chose &mdash; you'll need it in Step 2.
+          Note the <strong>deployment name</strong>. It defaults to <code>gpt-4.1-mini</code>; if
+          yours differs, write down what you got &mdash; you'll need it in Step 2.
         </li>
-        <li>Select <strong>Deploy</strong>.</li>
+        <li>Your deployed models are listed afterwards under <strong>Build</strong> &rarr; <strong>Models</strong>.</li>
       </ol>
       <figure class="shot" data-shot="03-deploy-model">
         <img src="media/03-deploy-model.png" alt="The model catalogue with gpt-4.1-mini selected, ready to deploy" loading="lazy">
@@ -149,12 +168,13 @@
       <h2>5. Copy your two settings</h2>
       <p>Step 2 needs exactly two values. Collect them now and paste them somewhere temporary.</p>
       <p>
-        <strong>The project endpoint.</strong> On your project's <strong>Overview</strong> page in
-        the Foundry portal, find the endpoint and copy it. It looks like this:
+        <strong>The project endpoint.</strong> On your project's <strong>Home</strong> page in the
+        Foundry portal &mdash; the welcome screen you land on &mdash; find the endpoint and copy it.
+        It looks like this:
       </p>
       <pre><code>https://fdy-callqa-ab1234.services.ai.azure.com/api/projects/call-qa-project</code></pre>
       <figure class="shot" data-shot="04-project-endpoint">
-        <img src="media/04-project-endpoint.png" alt="The project Overview page with the endpoint containing slash api slash projects, and the copy button highlighted" loading="lazy">
+        <img src="media/04-project-endpoint.png" alt="The project Home page with the endpoint containing slash api slash projects, and the copy button highlighted" loading="lazy">
         <figcaption>Use the copy button. The endpoint you want contains <code>/api/projects/</code>.</figcaption>
       </figure>
       <div class="warn">
@@ -175,7 +195,7 @@
       <p>
         This catches almost everyone. Creating a resource makes you its <strong>Owner</strong>,
         which lets you manage it &mdash; but managing and <em>using</em> are different permissions in
-        Azure. Calling the agent API needs the <strong>Azure AI User</strong> role, and Owner
+        Azure. Calling the agent API needs the <strong>Foundry User</strong> role, and Owner
         doesn't include it.
       </p>
       <ol>
@@ -183,13 +203,13 @@
         <li>Select the Foundry resource you created (<code>fdy-callqa-ab1234</code>).</li>
         <li>Select <strong>Access control (IAM)</strong> in the left navigation.</li>
         <li>Select <strong>+ Add</strong> &rarr; <strong>Add role assignment</strong>.</li>
-        <li>In the <strong>Role</strong> list, search for <strong>Azure AI User</strong> and select it. Then <strong>Next</strong>.</li>
+        <li>In the <strong>Role</strong> list, search for <strong>Foundry User</strong> and select it. Then <strong>Next</strong>. Microsoft renamed these roles recently &mdash; if your list only offers <strong>Azure AI User</strong>, that is the same role under its previous name.</li>
         <li>Leave <strong>User, group, or service principal</strong> selected and choose <strong>+ Select members</strong>. Find yourself, select your account, then <strong>Select</strong>.</li>
         <li>Select <strong>Review + assign</strong>.</li>
       </ol>
       <figure class="shot" data-shot="05-role-assignment">
-        <img src="media/05-role-assignment.png" alt="The Add role assignment page with Azure AI User selected in the role list" loading="lazy">
-        <figcaption><strong>Azure AI User</strong> on the Foundry resource. Being Owner is not enough.</figcaption>
+        <img src="media/05-role-assignment.png" alt="The Add role assignment page with Foundry User selected in the role list" loading="lazy">
+        <figcaption><strong>Foundry User</strong> on the Foundry resource. Being Owner is not enough.</figcaption>
       </figure>
       <p>Role assignments can take a minute or two to take effect. If Step 3 fails on permissions, wait a moment and try again.</p>
 
@@ -198,9 +218,9 @@
         <p>You should now have:</p>
         <ul>
           <li>A resource group <code>rg-call-qa-workshop</code> containing your Foundry resource.</li>
-          <li>A model deployment showing <strong>Succeeded</strong> under <strong>Models + endpoints</strong>.</li>
+          <li>A model deployment showing <strong>Succeeded</strong> under <strong>Build</strong> &rarr; <strong>Models</strong>.</li>
           <li>Your project endpoint and deployment name saved somewhere you can paste from.</li>
-          <li>Your own account listed with <strong>Azure AI User</strong> on the Foundry resource's IAM page.</li>
+          <li>Your own account listed with <strong>Foundry User</strong> on the Foundry resource's IAM page.</li>
         </ul>
       </div>
 
@@ -223,7 +243,7 @@
         <div>
           <p>
             You're a Contributor, not an Owner, on that scope. Contributors can create resources but
-            not grant access. Ask an administrator to assign you <strong>Azure AI User</strong> on
+            not grant access. Ask an administrator to assign you <strong>Foundry User</strong> on
             the Foundry resource, or run the workshop on a personal subscription where you're Owner.
           </p>
         </div>

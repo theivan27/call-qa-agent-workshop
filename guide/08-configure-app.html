@@ -99,8 +99,13 @@
       <p class="where">In the Codespace terminal</p>
       <pre><code>az role assignment create \
   --assignee 11111111-2222-3333-4444-555555555555 \
-  --role "Azure AI User" \
+  --role "53ca6127-db72-4b80-b1b0-d745d6d5456d" \
   --scope "/subscriptions/.../resourceGroups/rg-call-qa-workshop/providers/Microsoft.CognitiveServices/accounts/fdy-callqa-ab1234"</code></pre>
+      <p>
+        That GUID is the <strong>Foundry User</strong> role. Microsoft is partway through renaming
+        these roles from <em>Azure AI User</em>, so the ID is the one thing guaranteed to resolve
+        either way &mdash; prefer it over the display name in scripts.
+      </p>
       <p>
         Scoping to the one resource rather than the whole subscription is deliberate. This identity
         can use your Foundry project and nothing else &mdash; least privilege, applied where it costs you

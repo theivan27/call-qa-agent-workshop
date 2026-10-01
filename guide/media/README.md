@@ -50,10 +50,10 @@ The guide is a public site. Assume every screenshot will be read closely by some
 | File | P | What to capture |
 |---|---|---|
 | `01-resource-group.png` | P2 | The **Create a resource group** form, filled in with `rg-call-qa-workshop`, before you press Review + create. |
-| `02-foundry-create-advanced.png` | **P1** | The Foundry **Create project** dialog with **Advanced options expanded**, showing the resource group field set to `rg-call-qa-workshop`. Box the "Advanced options" toggle. This is the step people miss, and it's why their resources scatter. |
-| `03-deploy-model.png` | **P1** | **Models + endpoints** → the model picker with `gpt-4.1-mini` found and selected. Box the **Deploy** button. |
-| `04-project-endpoint.png` | **P1** | The project **Overview** page showing the endpoint containing `/api/projects/`, with the copy button boxed. Blur the rest of the page if it shows anything identifying. The single most-mistyped value in the workshop. |
-| `05-role-assignment.png` | **P1** | **Access control (IAM)** → Add role assignment, with **Azure AI User** selected in the role list. Box the role. |
+| `02-foundry-create-advanced.png` | **P1** | The Foundry **Create project** dialog with **Advanced options expanded**, showing the resource group field set to `rg-call-qa-workshop`. Box the "Advanced options" toggle. This is the step people miss, and it's why their resources scatter. Get the **New Foundry** toggle in frame too if it fits. |
+| `03-deploy-model.png` | **P1** | **Discover** → **Models** → the model picker with `gpt-4.1-mini` found and selected. Box the **Deploy** button. |
+| `04-project-endpoint.png` | **P1** | The project **Home** page showing the endpoint containing `/api/projects/`, with the copy button boxed. Blur the rest of the page if it shows anything identifying. The single most-mistyped value in the workshop. |
+| `05-role-assignment.png` | **P1** | **Access control (IAM)** → Add role assignment, with **Foundry User** selected in the role list — may still read **Azure AI User** while the rename rolls out. Box the role. |
 
 ### Step 2 — Open your Codespace
 

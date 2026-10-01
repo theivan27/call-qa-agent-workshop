@@ -1,4 +1,4 @@
-"""Create (or update) the Call QA Reviewer agent in Microsoft Foundry.
+"""Create (or update) the Call QA Reviewer agent in AI Foundry.
 
 Each run creates a new version of the same agent. Use --stage to follow the labs:
   --stage 1   instructions only                     (Lab 1)

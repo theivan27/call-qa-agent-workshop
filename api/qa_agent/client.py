@@ -1,4 +1,4 @@
-"""Creates the Microsoft Foundry clients used by the scripts and the web API."""
+"""Creates the AI Foundry clients used by the scripts and the web API."""
 import os
 from functools import lru_cache
 

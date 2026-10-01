@@ -77,7 +77,7 @@
       <h2>3. Try it in the playground</h2>
       <ol>
         <li>Go to <a href="https://ai.azure.com" target="_blank" rel="noopener">ai.azure.com</a> and open your project.</li>
-        <li>Open <strong>Agents</strong> in the left navigation.</li>
+        <li>Select <strong>Build</strong> in the upper-right navigation, then <strong>Agents</strong> in the left pane.</li>
         <li>Select <code>call-qa-reviewer</code>, then open it in the playground.</li>
         <li>Paste the transcript below, then ask: <em>Review this call.</em></li>
       </ol>
@@ -151,7 +151,7 @@ Agent: That works. Please pay through the Northwind app or any branch. Your refe
         <summary>A 403 or "permission denied" error</summary>
         <div>
           <p>
-            The <strong>Azure AI User</strong> role assignment is missing or hasn't propagated yet.
+            The <strong>Foundry User</strong> role assignment is missing or hasn't propagated yet.
             See <a href="01-foundry-project.html">Step 1, section 6</a>, wait a minute, and try
             again.
           </p>
@@ -163,7 +163,7 @@ Agent: That works. Please pay through the Northwind app or any branch. Your refe
         <div>
           <p>
             <code>MODEL_DEPLOYMENT_NAME</code> in <code>.env</code> has to match the deployment name
-            in <strong>Models + endpoints</strong> exactly &mdash; it's the deployment name you chose,
+            under <strong>Build</strong> &rarr; <strong>Models</strong> exactly &mdash; it's the deployment name you chose,
             not the model's catalog name. They're often the same, which makes a mismatch easy to
             miss.
           </p>

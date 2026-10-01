@@ -1,4 +1,4 @@
-# Call QA Reviewer: build an agent with Microsoft Foundry
+# Call QA Reviewer: build an agent with AI Foundry
 
 A hands-on workshop project for **Building Agents with AI Foundry** (Infoseer Consulting).
 
@@ -15,7 +15,7 @@ across client programs). All data is fictional: Northwind Bank and Contoso BPO a
 ## What you'll build
 
 ```
- Browser (src/)                Azure Functions API (api/)              Microsoft Foundry
+ Browser (src/)                Azure Functions API (api/)              AI Foundry
 ┌──────────────────┐  /api/*  ┌─────────────────────────────┐        ┌──────────────────────────┐
 │ Calls list       │ ───────▶ │ chat: runs the tool loop    │ ─────▶ │ Prompt agent             │
 │ Chat with agent  │          │ calls: lists sample calls   │ ◀───── │  - model + instructions  │

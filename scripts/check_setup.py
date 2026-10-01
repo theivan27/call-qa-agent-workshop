@@ -119,7 +119,7 @@ def check_project() -> bool:
 
     try:
         # Listing vector stores is a cheap call that exercises the data plane, which is
-        # what the Azure AI User role actually grants. create_agent.py uses the same call.
+        # what the Foundry User role actually grants. create_agent.py uses the same call.
         for _ in get_openai_client().vector_stores.list():
             break
     except Exception as exc:  # noqa: BLE001 - the message is the useful part for a beginner
@@ -128,7 +128,7 @@ def check_project() -> bool:
         if "403" in text or "forbidden" in lowered or "permissiondenied" in lowered.replace(" ", ""):
             fail(
                 "the project refused the request (403)",
-                "You are missing the Azure AI User role on the Foundry resource. "
+                "You are missing the Foundry User role on the Foundry resource. "
                 "See guide Step 1, section 6. Role changes can take a minute to apply",
             )
         elif "401" in text or "unauthorized" in lowered:
