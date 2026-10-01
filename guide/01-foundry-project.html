@@ -60,6 +60,10 @@
       <ol start="5">
         <li>Select <strong>Review + create</strong>, then <strong>Create</strong>.</li>
       </ol>
+      <figure class="shot" data-shot="01-resource-group">
+        <img src="media/01-resource-group.png" alt="The Create a resource group form with the name rg-call-qa-workshop filled in" loading="lazy">
+        <figcaption>Name the group <code>rg-call-qa-workshop</code>. Everything else you create goes in here.</figcaption>
+      </figure>
 
       <h2>2. Set a budget alert</h2>
       <p>Two minutes now buys you peace of mind for the rest of the month.</p>
@@ -104,6 +108,10 @@
       <ol start="4">
         <li>Select <strong>Create</strong> and wait. This takes a minute or two.</li>
       </ol>
+      <figure class="shot" data-shot="02-foundry-create-advanced">
+        <img src="media/02-foundry-create-advanced.png" alt="The Foundry Create project dialog with Advanced options expanded, showing the resource group set to rg-call-qa-workshop" loading="lazy">
+        <figcaption>Expand <strong>Advanced options</strong> and set the resource group. Skip this and your resources end up scattered.</figcaption>
+      </figure>
       <div class="warn">
         <span class="note-title">Choosing a region</span>
         <p>
@@ -129,6 +137,10 @@
         </li>
         <li>Select <strong>Deploy</strong>.</li>
       </ol>
+      <figure class="shot" data-shot="03-deploy-model">
+        <img src="media/03-deploy-model.png" alt="The model catalogue with gpt-4.1-mini selected, ready to deploy" loading="lazy">
+        <figcaption>Find <code>gpt-4.1-mini</code>, then deploy it. The deployment name is what goes in your settings.</figcaption>
+      </figure>
       <p>
         Any small, cheap chat model works here. If <code>gpt-4.1-mini</code> isn't offered, pick
         another mini or small model and use its deployment name throughout.
@@ -141,6 +153,10 @@
         the Foundry portal, find the endpoint and copy it. It looks like this:
       </p>
       <pre><code>https://fdy-callqa-ab1234.services.ai.azure.com/api/projects/call-qa-project</code></pre>
+      <figure class="shot" data-shot="04-project-endpoint">
+        <img src="media/04-project-endpoint.png" alt="The project Overview page with the endpoint containing slash api slash projects, and the copy button highlighted" loading="lazy">
+        <figcaption>Use the copy button. The endpoint you want contains <code>/api/projects/</code>.</figcaption>
+      </figure>
       <div class="warn">
         <span class="note-title">Get this one exactly right</span>
         <p>
@@ -171,6 +187,10 @@
         <li>Leave <strong>User, group, or service principal</strong> selected and choose <strong>+ Select members</strong>. Find yourself, select your account, then <strong>Select</strong>.</li>
         <li>Select <strong>Review + assign</strong>.</li>
       </ol>
+      <figure class="shot" data-shot="05-role-assignment">
+        <img src="media/05-role-assignment.png" alt="The Add role assignment page with Azure AI User selected in the role list" loading="lazy">
+        <figcaption><strong>Azure AI User</strong> on the Foundry resource. Being Owner is not enough.</figcaption>
+      </figure>
       <p>Role assignments can take a minute or two to take effect. If Step 3 fails on permissions, wait a moment and try again.</p>
 
       <div class="check">

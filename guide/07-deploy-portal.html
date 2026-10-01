@@ -80,6 +80,10 @@ git push</code></pre>
         </li>
         <li>Choose your <strong>Organization</strong> (your own username), your <strong>Repository</strong> (<code>call-qa-agent-workshop</code>), and <strong>Branch</strong> <code>main</code>.</li>
       </ol>
+      <figure class="shot" data-shot="14-swa-github-source">
+        <img src="media/14-swa-github-source.png" alt="The Deployment details section with GitHub as the source and the repository and branch selected" loading="lazy">
+        <figcaption>Source GitHub, then your own fork and the <code>main</code> branch.</figcaption>
+      </figure>
       <div class="warn">
         <span class="note-title">It must be your fork</span>
         <p>
@@ -114,6 +118,10 @@ git push</code></pre>
       <ol>
         <li>Select <strong>Review + create</strong>, then <strong>Create</strong>.</li>
       </ol>
+      <figure class="shot" data-shot="15-swa-build-details">
+        <img src="media/15-swa-build-details.png" alt="The Build Details section with app location slash src, api location slash api, and the output location field empty" loading="lazy">
+        <figcaption><code>/src</code>, <code>/api</code>, and <strong>Output location empty</strong>. The empty field is the one that breaks builds.</figcaption>
+      </figure>
 
       <h2>5. Watch the first deployment</h2>
       <p>Azure just committed a workflow file to your fork and started it. Go and watch:</p>
@@ -122,6 +130,10 @@ git push</code></pre>
         <li>You'll see a run named after your commit, in progress.</li>
         <li>Give it three to five minutes. A green tick means deployed.</li>
       </ol>
+      <figure class="shot" data-shot="16-actions-green">
+        <img src="media/16-actions-green.png" alt="The Actions tab on the fork showing a successful deployment run" loading="lazy">
+        <figcaption>A green run means your site is live.</figcaption>
+      </figure>
       <p>
         Look in <code>.github/workflows/</code> on your fork and you'll find a new file,
         <code>azure-static-web-apps-&lt;something&gt;.yml</code>. Azure wrote it, along with a

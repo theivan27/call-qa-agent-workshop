@@ -408,6 +408,42 @@ pre.has-copy:hover .copy-btn, .copy-btn:focus-visible { opacity: 1; }
 .check .note-title { color: var(--tip); }
 .check .note-title::before { content: "✓"; background: var(--tip); font-size: 10px; }
 
+/* ============ Screenshots ============ */
+
+.shot {
+  margin: 0 0 22px;
+  max-width: 76ch;
+}
+.shot img {
+  display: block;
+  width: 100%; height: auto;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+}
+/* Click to open full size, for dense portal screens. */
+.shot a.shot-link { display: block; text-decoration: none; }
+.shot a.shot-link:hover img { border-color: var(--brand); }
+.shot figcaption {
+  margin-top: 7px;
+  font-size: 13.5px; line-height: 1.5; color: var(--muted);
+}
+.shot figcaption .shot-num {
+  font-weight: 600; color: var(--ink);
+}
+
+/* Shown only to whoever is building the guide (localhost or ?shots=debug),
+   so attendees never see a slot that has no image yet. */
+.shot-missing {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 20px;
+  border: 1px dashed var(--rule-strong); border-radius: var(--radius-md);
+  background: var(--surface);
+  font-size: 13.5px; color: var(--muted);
+}
+.shot-missing strong { color: var(--caution); font-size: 13px; letter-spacing: .04em; text-transform: uppercase; }
+.shot-missing code { font-size: 13px; }
+
 /* ============ Tables ============ */
 
 .fields {

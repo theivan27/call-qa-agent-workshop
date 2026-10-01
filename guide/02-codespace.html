@@ -49,6 +49,10 @@
         <li>Leave the repository name as it is. Keep <strong>Copy the main branch only</strong> ticked.</li>
         <li>Select <strong>Create fork</strong>.</li>
       </ol>
+      <figure class="shot" data-shot="06-fork">
+        <img src="media/06-fork.png" alt="GitHub's Create a new fork page with the Create fork button highlighted" loading="lazy">
+        <figcaption>Forking gives you a copy Azure can deploy from in Step 7.</figcaption>
+      </figure>
       <p>You'll land on your own copy, at <code>github.com/&lt;your-username&gt;/call-qa-agent-workshop</code>.</p>
 
       <h2>2. Start the Codespace</h2>
@@ -57,6 +61,10 @@
         <li>Open the <strong>Codespaces</strong> tab.</li>
         <li>Select <strong>Create codespace on main</strong>.</li>
       </ol>
+      <figure class="shot" data-shot="07-codespace-create">
+        <img src="media/07-codespace-create.png" alt="The GitHub Code button open on the Codespaces tab with Create codespace on main highlighted" loading="lazy">
+        <figcaption>Check the URL says <em>your</em> username before you create it.</figcaption>
+      </figure>
       <p>
         A browser version of VS Code opens and starts building your environment. The first build
         takes <strong>three to five minutes</strong> &mdash; it's installing Python packages, the Azure
@@ -71,6 +79,10 @@
         </p>
       </div>
       <p>When it's done, the terminal prints a short welcome message listing what to do next.</p>
+      <figure class="shot" data-shot="08-codespace-ready">
+        <img src="media/08-codespace-ready.png" alt="A ready Codespace showing the file explorer on the left and the setup message in the terminal" loading="lazy">
+        <figcaption>What a finished build looks like: files on the left, terminal at the bottom.</figcaption>
+      </figure>
 
       <h2>3. Fill in your settings</h2>
       <p>
@@ -91,6 +103,10 @@ FOUNDRY_AGENT_NAME=call-qa-reviewer</code></pre>
         </li>
         <li>Save with <strong>Ctrl+S</strong> (<strong>Cmd+S</strong> on a Mac).</li>
       </ol>
+      <figure class="shot" data-shot="09-env-file">
+        <img src="media/09-env-file.png" alt="The .env file open in the editor showing the three settings to fill in" loading="lazy">
+        <figcaption>Replace the placeholder endpoint and model name, then save.</figcaption>
+      </figure>
       <p>
         No quotes around the values, and no spaces around the <code>=</code>. Now do the same for
         the API's copy of the setting &mdash; open <code>api/local.settings.json</code> and put the same
@@ -123,6 +139,10 @@ FOUNDRY_AGENT_NAME=call-qa-reviewer</code></pre>
         <li>Sign in with the <strong>same account</strong> you used in Step 1.</li>
         <li>Come back to the terminal. It prints your subscriptions as JSON.</li>
       </ol>
+      <figure class="shot" data-shot="10-az-login-device-code">
+        <img src="media/10-az-login-device-code.png" alt="The terminal showing the device code and the URL to open after running az login" loading="lazy">
+        <figcaption>Copy the code, open the URL in a new tab, and sign in with your Step 1 account.</figcaption>
+      </figure>
       <p>If you have more than one subscription, make sure the right one is active:</p>
       <p class="where">In the Codespace terminal</p>
       <pre><code>az account show --output table</code></pre>
@@ -135,6 +155,10 @@ FOUNDRY_AGENT_NAME=call-qa-reviewer</code></pre>
       <p class="where">In the Codespace terminal</p>
       <pre><code>python scripts/check_setup.py</code></pre>
       <p>Every line should come back with a tick. If any line fails, it tells you which step to go back to.</p>
+      <figure class="shot" data-shot="11-check-setup">
+        <img src="media/11-check-setup.png" alt="The check_setup script output with all four checks passing" loading="lazy">
+        <figcaption>All four passing means your settings, sign-in and role assignment are all good.</figcaption>
+      </figure>
 
       <div class="check">
         <span class="note-title">Checkpoint</span>

@@ -441,6 +441,67 @@ function addCopyButtons() {
   });
 }
 
+/* Screenshots are optional. A figure whose image is missing is removed entirely, so
+   attendees never see a broken slot; while you are building the guide (on localhost, or
+   with ?shots=debug on the URL) it becomes a visible note naming the file to capture. */
+function wireScreenshots() {
+  const figures = [...document.querySelectorAll("figure.shot")];
+  if (!figures.length) return;
+
+  const debug =
+    new URLSearchParams(location.search).has("shots") ||
+    ["localhost", "127.0.0.1", ""].includes(location.hostname);
+
+  let shown = 0;
+
+  for (const fig of figures) {
+    const img = fig.querySelector("img");
+    if (!img) continue;
+
+    const caption = fig.querySelector("figcaption");
+
+    const onMissing = () => {
+      if (!debug) { fig.remove(); return; }
+      const box = document.createElement("div");
+      box.className = "shot-missing";
+      const label = document.createElement("strong");
+      label.textContent = "Screenshot needed";
+      const file = document.createElement("code");
+      file.textContent = img.getAttribute("src");
+      const what = document.createElement("span");
+      what.textContent = img.getAttribute("alt") || "";
+      box.append(label, file, what);
+      img.replaceWith(box);
+    };
+
+    const onLoaded = () => {
+      shown += 1;
+      // Full size in a new tab: portal screens are detailed and get scaled down here.
+      const link = document.createElement("a");
+      link.className = "shot-link";
+      link.href = img.getAttribute("src");
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.setAttribute("aria-label", `Open full size: ${img.getAttribute("alt") || "screenshot"}`);
+      img.replaceWith(link);
+      link.append(img);
+      if (caption && !caption.querySelector(".shot-num")) {
+        const num = document.createElement("span");
+        num.className = "shot-num";
+        num.textContent = `Figure ${shown}. `;
+        caption.prepend(num);
+      }
+    };
+
+    if (img.complete) {
+      img.naturalWidth > 0 ? onLoaded() : onMissing();
+    } else {
+      img.addEventListener("load", onLoaded, { once: true });
+      img.addEventListener("error", onMissing, { once: true });
+    }
+  }
+}
+
 function wireSidebarToggle() {
   const btn = document.querySelector("[data-nav-toggle]");
   const panel = document.querySelector("[data-guide-sidebar]");
@@ -463,5 +524,6 @@ document.addEventListener("DOMContentLoaded", () => {
   buildDoneToggle();
   buildPrevNext();
   addCopyButtons();
+  wireScreenshots();
   wireSidebarToggle();
 });

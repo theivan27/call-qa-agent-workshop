@@ -79,6 +79,10 @@ To host it for your own attendees:
    source, and put its deployment token in a repository secret named
    `AZURE_STATIC_WEB_APPS_API_TOKEN_GUIDE`.
 3. Push to `main`. The guide workflow publishes `guide/` to that app. Give attendees the URL.
+4. Add screenshots as you go. [`guide/media/README.md`](guide/media/README.md) lists every
+   shot the guide has a slot for, which are most important, and what to redact. Slots with no
+   image are dropped from the page, so a partly-illustrated guide still looks finished. To see
+   what's outstanding, add `?shots=debug` to any page's URL.
 
 ## In GitHub Codespaces
 
@@ -123,6 +127,7 @@ scripts/             check_setup.py, create_agent.py, chat_cli.py, evaluate.py
 evals/               Test cases for evaluate.py
 src/                 The app: static front end and staticwebapp.config.json
 guide/               The attendee guide. Its own Static Web App, deployed separately
+  media/             Screenshots. media/README.md lists what to capture
 labs/                Pointers into guide/ (the instructions used to live here)
 .github/workflows/   deploy-guide.yml publishes guide/; the app's workflow is written by Azure
 ```
