@@ -9,14 +9,18 @@
   <script src="steps.js" defer></script>
 </head>
 <body>
-  <header class="guide-top">
-    <a class="home" href="index.html">
-      <strong>Call QA Agent Workshop</strong>
-      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
-    </a>
-    <div class="spacer"></div>
-    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
-    <a class="applink" data-repo-url="repo" href="https://github.com/">Get the code &rarr;</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-org">Infoseer</span>
+        <span class="brand-product">Learn</span>
+      </a>
+      <span class="brand-divider" aria-hidden="true"></span>
+      <p class="brand-module">Building Agents with AI Foundry</p>
+      <div class="header-spacer"></div>
+      <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Contents</button>
+      <a class="header-cta" data-repo-url="repo" href="https://github.com/">Get the code</a>
+    </div>
   </header>
 
   <div class="guide-shell">
@@ -120,8 +124,8 @@
         <ul>
           <li>The app loads in your browser and the calls list is populated.</li>
           <li>Sending a request produces a scored review.</li>
-          <li><strong>What the agent did</strong> lists tool calls with arguments and results.</li>
-          <li>Tool calls show the arguments your code received and what it returned.</li>
+          <li><strong>What the agent did</strong> lists each tool call in order.</li>
+          <li><strong>Show details</strong> reveals the arguments passed and the result returned.</li>
         </ul>
       </div>
 

@@ -9,14 +9,18 @@
   <script src="steps.js" defer></script>
 </head>
 <body>
-  <header class="guide-top">
-    <a class="home" href="index.html">
-      <strong>Call QA Agent Workshop</strong>
-      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
-    </a>
-    <div class="spacer"></div>
-    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
-    <a class="applink" data-repo-url="repo" href="https://github.com/">Get the code &rarr;</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-org">Infoseer</span>
+        <span class="brand-product">Learn</span>
+      </a>
+      <span class="brand-divider" aria-hidden="true"></span>
+      <p class="brand-module">Building Agents with AI Foundry</p>
+      <div class="header-spacer"></div>
+      <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Contents</button>
+      <a class="header-cta" data-repo-url="repo" href="https://github.com/">Get the code</a>
+    </div>
   </header>
 
   <div class="guide-shell">
@@ -93,7 +97,7 @@ git push</code></pre>
       <table class="fields">
         <thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead>
         <tbody>
-          <tr><td>App location</td><td><code>/src</code></td><td>The front end, and this guide.</td></tr>
+          <tr><td>App location</td><td><code>/src</code></td><td>The front end.</td></tr>
           <tr><td>Api location</td><td><code>/api</code></td><td>The Python Functions.</td></tr>
           <tr><td>Output location</td><td><em>leave empty</em></td><td>Nothing is built &mdash; the files ship as they are.</td></tr>
         </tbody>
