@@ -42,6 +42,7 @@ across client programs). All data is fictional: Northwind Bank and Contoso BPO a
 | [4. Run the web app](labs/04-web-app.md) | Run the static web app and API locally | 15 min |
 | [5. Deploy](labs/05-deploy.md) | Publish to Azure Static Web Apps | 20 min |
 | [6. Evaluate](labs/06-evaluate.md) | Run test cases and check the guardrails | 10 min |
+| [Optional: AI call recordings](labs/optional-audio.md) | Generate audio of the sample calls with Azure AI Speech | 10 min |
 
 ## Quick start (if you've done this before)
 

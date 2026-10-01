@@ -36,10 +36,26 @@ async function loadCalls() {
       });
       li.appendChild(btn);
       els.callList.appendChild(li);
+      addRecording(li, c.call_id);
     }
   } catch (err) {
     els.callList.innerHTML = `<li class="muted">Couldn't load calls (${esc(err.message)}). Is the API running?</li>`;
   }
+}
+
+// Shows a player when src/audio/<call_id>.mp3 exists (made by scripts/generate_audio.py).
+async function addRecording(li, callId) {
+  const src = `audio/${encodeURIComponent(callId)}.mp3`;
+  try {
+    const res = await fetch(src, { method: "HEAD" });
+    const type = res.headers.get("content-type") || "";
+    if (!res.ok || !type.includes("audio")) return;
+  } catch { return; }
+  const wrap = document.createElement("div");
+  wrap.className = "call-audio";
+  wrap.innerHTML = `<audio controls preload="none" src="${src}" aria-label="Recording of call ${esc(callId)}"></audio>
+    <span>AI-generated voices, fictional call</span>`;
+  li.appendChild(wrap);
 }
 
 // ---------- Chat ----------

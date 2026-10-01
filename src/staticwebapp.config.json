@@ -4,6 +4,9 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/api/*", "*.{css,js,svg,png,ico}"]
+    "exclude": [
+      "/api/*",
+      "*.{css,js,svg,png,ico,mp3}"
+    ]
   }
 }

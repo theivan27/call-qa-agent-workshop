@@ -45,7 +45,7 @@ Right now anyone with the URL can use your agent. Replace `src/staticwebapp.conf
   "platform": { "apiRuntime": "python:3.10" },
   "routes": [{ "route": "/*", "allowedRoles": ["authenticated"] }],
   "responseOverrides": { "401": { "redirect": "/.auth/login/aad", "statusCode": 302 } },
-  "navigationFallback": { "rewrite": "/index.html", "exclude": ["/api/*", "*.{css,js,svg,png,ico}"] }
+  "navigationFallback": { "rewrite": "/index.html", "exclude": ["/api/*", "*.{css,js,svg,png,ico,mp3}"] }
 }
 ```
 Push the change. Visitors now sign in with Microsoft Entra ID first.
