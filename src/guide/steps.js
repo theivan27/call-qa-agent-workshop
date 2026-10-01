@@ -18,7 +18,7 @@ const STEPS = [
 
 /* Change this one line when you host the workshop from your own repository, and every
    link, fork button and clone command in the guide follows. */
-const REPO = "infoseer-consulting/call-qa-agent-workshop";
+const REPO = "theivan27/call-qa-agent-workshop";
 
 const REPO_LINKS = {
   repo: `https://github.com/${REPO}`,
