@@ -1,16 +1,23 @@
-name: Deploy to Azure Static Web Apps
+# Fallback deployment workflow.
+#
+# The workshop (guide Step 7) has you create the Static Web App in the Azure portal with
+# GitHub as the source. Azure then commits its own workflow file to your fork and that is
+# what deploys on every push, so this file deliberately does NOT run on push -- two
+# workflows deploying the same app would race each other.
+#
+# Use this one only if you cannot use the portal's GitHub sign-in (locked-down org, or you
+# chose "Other" as the deployment source):
+#   1. In the portal, on your Static Web App, select "Manage deployment token" and copy it.
+#   2. In your fork: Settings > Secrets and variables > Actions > New repository secret,
+#      named AZURE_STATIC_WEB_APPS_API_TOKEN.
+#   3. Run this workflow from the Actions tab ("Run workflow").
+name: Deploy to Azure Static Web Apps (manual fallback)
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches: [main]
   workflow_dispatch:
 
 jobs:
   build_and_deploy:
-    if: github.event_name != 'pull_request' || github.event.action != 'closed'
     runs-on: ubuntu-latest
     name: Build and deploy
     steps:
@@ -24,14 +31,3 @@ jobs:
           app_location: src
           api_location: api
           output_location: ""
-
-  close_pull_request:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close pull request environment
-    steps:
-      - name: Close
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          action: close

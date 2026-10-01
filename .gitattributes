@@ -1,0 +1,10 @@
+# Normalise line endings so the same checkout works on Windows and in a Linux Codespace.
+* text=auto eol=lf
+
+# Shell scripts must stay LF: bash in the dev container fails on CRLF line endings.
+*.sh text eol=lf
+
+# Binary files git should not touch.
+*.png binary
+*.mp3 binary
+*.wav binary

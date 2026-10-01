@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deploy from the portal &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Create an Azure Static Web App from your fork so every push deploys automatically.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 7</p>
+      <h1>Deploy from the portal</h1>
+      <p class="lede">
+        Create a Static Web App in the portal, point it at your fork, and let Azure set up the
+        deployment for you. From then on, every push to <code>main</code> publishes itself.
+      </p>
+      <p class="meta">About 20 minutes &middot; Mostly waiting for the first build</p>
+
+      <h2>1. Push your work first</h2>
+      <p>
+        Azure deploys what's on GitHub, not what's in your Codespace. If you changed anything in
+        Steps 3 to 5 &mdash; a new compliance rule, a sixth tool &mdash; commit it now.
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>git add .
+git commit -m "My workshop changes"
+git push</code></pre>
+      <p>
+        Nothing to commit? Fine, move on. And don't worry about leaking your endpoint:
+        <code>.env</code> and <code>api/local.settings.json</code> are both in
+        <code>.gitignore</code>, so <code>git add .</code> skips them.
+      </p>
+
+      <h2>2. Create the Static Web App</h2>
+      <ol>
+        <li>Go to <a href="https://portal.azure.com" target="_blank" rel="noopener">portal.azure.com</a>.</li>
+        <li>Search for <strong>Static Web Apps</strong> and select it.</li>
+        <li>Select <strong>+ Create</strong>.</li>
+      </ol>
+      <p>On the <strong>Basics</strong> tab:</p>
+      <table class="fields">
+        <tbody>
+          <tr><td>Subscription</td><td>The same one you've used throughout.</td></tr>
+          <tr><td>Resource group</td><td><code>rg-call-qa-workshop</code> &mdash; the same group, so Step 10 catches this too.</td></tr>
+          <tr><td>Name</td><td><code>swa-call-qa-ab1234</code>. Part of your public URL, so make it yours.</td></tr>
+          <tr><td>Plan type</td><td><strong>Free</strong>.</td></tr>
+          <tr><td>Region</td><td>Any nearby region. This is where the API functions run.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>3. Connect your GitHub repository</h2>
+      <p>Still on the <strong>Basics</strong> tab, under <strong>Deployment details</strong>:</p>
+      <ol>
+        <li>Set <strong>Source</strong> to <strong>GitHub</strong>.</li>
+        <li>
+          Select <strong>Sign in with GitHub</strong> and authorise Azure. It asks for permission to
+          write to your repositories &mdash; that's how it commits the deployment workflow in a moment.
+        </li>
+        <li>Choose your <strong>Organization</strong> (your own username), your <strong>Repository</strong> (<code>call-qa-agent-workshop</code>), and <strong>Branch</strong> <code>main</code>.</li>
+      </ol>
+      <div class="warn">
+        <span class="note-title">It must be your fork</span>
+        <p>
+          If the repository list doesn't include your copy, you're signed in to GitHub as someone
+          else, or you skipped the fork in <a href="02-codespace.html">Step 2</a>. You cannot deploy
+          from a repository you can't write to.
+        </p>
+      </div>
+
+      <h2>4. Tell Azure where the code lives</h2>
+      <p>
+        Under <strong>Build Details</strong>, set <strong>Build Presets</strong> to
+        <strong>Custom</strong>, then fill in these three fields <em>exactly</em>:
+      </p>
+      <table class="fields">
+        <thead><tr><th>Field</th><th>Value</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>App location</td><td><code>/src</code></td><td>The front end, and this guide.</td></tr>
+          <tr><td>Api location</td><td><code>/api</code></td><td>The Python Functions.</td></tr>
+          <tr><td>Output location</td><td><em>leave empty</em></td><td>Nothing is built &mdash; the files ship as they are.</td></tr>
+        </tbody>
+      </table>
+      <div class="warn">
+        <span class="note-title">The field that breaks deployments</span>
+        <p>
+          <strong>Output location</strong> must be empty. A preset may have filled in
+          <code>dist</code> or <code>build</code>; clear it. If you leave it set, the build fails
+          looking for a folder this project never creates &mdash; the most common failure on this step
+          by a wide margin.
+        </p>
+      </div>
+      <ol>
+        <li>Select <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+      </ol>
+
+      <h2>5. Watch the first deployment</h2>
+      <p>Azure just committed a workflow file to your fork and started it. Go and watch:</p>
+      <ol>
+        <li>Open your fork on GitHub and select the <strong>Actions</strong> tab.</li>
+        <li>You'll see a run named after your commit, in progress.</li>
+        <li>Give it three to five minutes. A green tick means deployed.</li>
+      </ol>
+      <p>
+        Look in <code>.github/workflows/</code> on your fork and you'll find a new file,
+        <code>azure-static-web-apps-&lt;something&gt;.yml</code>. Azure wrote it, along with a
+        repository secret holding the deployment token. Pull it into your Codespace so your local
+        copy matches:
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>git pull</code></pre>
+
+      <h2>6. Open your site</h2>
+      <ol>
+        <li>In the portal, open your Static Web App resource.</li>
+        <li>On <strong>Overview</strong>, find the <strong>URL</strong> &mdash; something like <code>https://nice-field-0a1b2c3.azurestaticapps.net</code>.</li>
+        <li>Select it.</li>
+      </ol>
+      <p>
+        The app loads, and this guide is there too at <code>/guide/</code>. That URL is public &mdash;
+        you can send it to anyone. You'll lock it down in Step 8.
+      </p>
+      <div class="warn">
+        <span class="note-title">The calls list won't load yet. That's expected.</span>
+        <p>
+          The front end deployed fine, but the API has no way to authenticate. In your Codespace it
+          borrowed your <code>az login</code> session; in Azure there's no such session. Step 8 gives
+          it an identity of its own. Don't debug this &mdash; just carry on.
+        </p>
+      </div>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <ul>
+          <li>The Static Web App exists in <code>rg-call-qa-workshop</code>.</li>
+          <li>The Actions run on your fork finished green.</li>
+          <li>Your site's URL loads the app's layout, and <code>/guide/</code> shows this guide.</li>
+          <li>A new <code>azure-static-web-apps-*.yml</code> is in your fork.</li>
+        </ul>
+      </div>
+
+      <h2>How deployment works from now on</h2>
+      <p>
+        Push to <code>main</code> and the workflow republishes the site. Open a pull request and
+        Static Web Apps builds a temporary <strong>preview environment</strong> on its own URL, then
+        tears it down when the PR closes. That's a genuinely useful way to review a change to the
+        agent's instructions before it reaches anyone.
+      </p>
+      <div class="note">
+        <span class="note-title">About the repository's own workflow file</span>
+        <p>
+          This project ships with <code>.github/workflows/azure-static-web-apps.yml</code>, which
+          deploys using a token you paste in yourself. It's set to run only when you trigger it
+          manually, so it won't fight with the one Azure just created. It's there as a fallback for
+          anyone who can't use the GitHub sign-in route &mdash; locked-down organizations, usually.
+          Ignore it.
+        </p>
+      </div>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>The Actions run failed</summary>
+        <div>
+          <p>Open the run and read the failing step. Nearly always one of:</p>
+          <ul>
+            <li><strong>Output location</strong> wasn't empty. Fix it in the portal under <strong>Settings</strong> &rarr; <strong>Configuration</strong>, or edit <code>output_location: ""</code> in the generated workflow file.</li>
+            <li><strong>App location</strong> or <strong>Api location</strong> is wrong. They are <code>/src</code> and <code>/api</code>.</li>
+            <li>An API dependency failed to install. Check <code>api/requirements.txt</code> is unchanged.</li>
+          </ul>
+          <p>After fixing the workflow file, commit and push to trigger a fresh run.</p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I can't see my repository in the dropdown</summary>
+        <div>
+          <p>
+            Select <strong>Change account</strong> under the GitHub sign-in and use the account that
+            owns the fork. If your organization restricts third-party apps, an owner has to approve
+            Azure's access &mdash; in that case use the token route in the fallback workflow instead.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>A second, failing workflow run appeared</summary>
+        <div>
+          <p>
+            Your fork is from an older copy of this project where
+            <code>azure-static-web-apps.yml</code> still ran on every push. It fails because it has
+            no token. Open that file and change its triggers to <code>workflow_dispatch:</code> only,
+            or delete it &mdash; Azure's generated workflow is the one doing the work.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I get a 404 at the site URL</summary>
+        <div>
+          <p>
+            Either the first deployment hasn't finished &mdash; check Actions &mdash; or
+            <strong>App location</strong> isn't <code>/src</code>, so Azure published a folder with no
+            <code>index.html</code> in it.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

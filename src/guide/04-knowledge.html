@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add knowledge &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Ground the agent in your own scorecard and compliance checklist using the file search tool.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 4</p>
+      <h1>Add knowledge</h1>
+      <p class="lede">
+        Your agent doesn't need to guess what good looks like. Give it your organization's actual
+        scorecard and compliance checklist, and watch generic feedback turn into citations.
+      </p>
+      <p class="meta">About 15 minutes &middot; This is the step where the agent starts being useful</p>
+
+      <h2>1. Look at what you're about to give it</h2>
+      <p>Open the three files in <code>knowledge/</code>:</p>
+      <table class="fields">
+        <tbody>
+          <tr>
+            <td><code>qa_scorecard.md</code></td>
+            <td>Five criteria totalling 100 points: Opening (15), Verification (20), Empathy and tone (20), Resolution (25), Compliance (20). Target is 80.</td>
+          </tr>
+          <tr>
+            <td><code>compliance_checklist.md</code></td>
+            <td>Seven rules, <code>CC-01</code> to <code>CC-07</code>, each with a severity. <code>CC-02</code> (verify before discussing details) and <code>CC-04</code> (no threats) are high severity.</td>
+          </tr>
+          <tr>
+            <td><code>coaching_guide.md</code></td>
+            <td>How to phrase feedback to an agent so it's useful rather than demoralising.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        These are plain markdown. That's the point &mdash; a QA manager can edit them without involving
+        a developer. Notice that the scorecard encodes real judgement: a high-severity breach zeroes
+        the compliance criterion outright, and Taglish is explicitly fine.
+      </p>
+
+      <h2>2. Attach them to the agent</h2>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>python scripts/create_agent.py --stage 2</code></pre>
+      <p>You'll see each file upload, then:</p>
+      <pre><code>Agent ready: name=call-qa-reviewer version=2 stage=2 tools=1</code></pre>
+      <p>
+        Version 2, one tool. That tool is <strong>file search</strong>. Two things just happened:
+        your files were uploaded to a <strong>vector store</strong> &mdash; a searchable index of their
+        meaning, not just their words &mdash; and the agent was given the ability to search it.
+      </p>
+      <div class="note">
+        <span class="note-title">Why not just paste the files into the instructions?</span>
+        <p>
+          For three short files you could, and it would work. It stops working as the documents grow:
+          you pay for every token on every single call, and models lose precision in very long
+          instructions. File search retrieves only the passages that matter for the question being
+          asked. The real win is operational, though &mdash; policy lives in files anyone can edit,
+          separate from the agent's behaviour.
+        </p>
+      </div>
+      <p>
+        The upload logic is <code>ensure_vector_store()</code> in
+        <code>scripts/create_agent.py</code>. It reuses an existing store rather than making a new
+        one each run, which is why re-running the script is cheap.
+      </p>
+
+      <h2>3. Test the same call again</h2>
+      <p>
+        Go back to the playground in <a href="https://ai.azure.com" target="_blank" rel="noopener">ai.azure.com</a>.
+        Start a <strong>new</strong> conversation &mdash; otherwise you're reading replies from the old
+        version &mdash; and paste the same transcript from Step 3. Ask: <em>Review this call.</em>
+      </p>
+      <p>This time you should get:</p>
+      <ul>
+        <li>A score per criterion using the scorecard's own point values, not invented ones.</li>
+        <li><strong>CC-01</strong> flagged: no recording disclosure.</li>
+        <li><strong>CC-02</strong> flagged as <em>high severity</em>: the balance came before verification.</li>
+        <li>Credit where it's due &mdash; the payment plan offer satisfies <code>CC-05</code>.</li>
+      </ul>
+      <p>
+        That's the difference knowledge makes. Same model, same instructions, same transcript &mdash; but
+        now the output is auditable. A QA manager can check the agent's reasoning against a document
+        they own.
+      </p>
+
+      <h2>4. Change the policy without changing any code</h2>
+      <p>This is the part worth remembering after today.</p>
+      <ol>
+        <li>Open <code>knowledge/compliance_checklist.md</code>.</li>
+        <li>Add a row to the bottom of the table:</li>
+      </ol>
+      <pre><code>| CC-08 | Offer to send a written summary by SMS or email. | Low |</code></pre>
+      <ol start="3">
+        <li>Save, then re-upload:</li>
+      </ol>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>python scripts/create_agent.py --stage 2 --refresh-knowledge</code></pre>
+      <ol start="4">
+        <li>In a new playground conversation, ask: <em>What does CC-08 require?</em></li>
+      </ol>
+      <p>
+        It knows. You changed your compliance policy by editing a markdown file. Nobody deployed
+        anything, nobody touched Python. That's the operating model you're selling to a QA team.
+      </p>
+      <div class="warn">
+        <span class="note-title">--refresh-knowledge matters</span>
+        <p>
+          Without that flag the script reuses the existing vector store and your edit is silently
+          ignored. If you change a file in <code>knowledge/</code> and the agent seems not to
+          notice, this is almost always why.
+        </p>
+      </div>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <ul>
+          <li><code>create_agent.py --stage 2</code> printed <code>version=2 stage=2 tools=1</code>.</li>
+          <li>The agent cites <code>CC-01</code> and <code>CC-02</code> by number on the sample call.</li>
+          <li>Its scores use the scorecard's real point values.</li>
+          <li>It can answer a question about the <code>CC-08</code> rule you invented.</li>
+        </ul>
+      </div>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>It still gives generic feedback with no rule numbers</summary>
+        <div>
+          <p>
+            Start a brand-new conversation in the playground &mdash; an existing thread can keep
+            answering from the older agent version. Confirm the create command printed
+            <code>tools=1</code>. If it printed <code>tools=0</code>, you ran stage 1 again.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>The upload failed partway through</summary>
+        <div>
+          <p>Clear it out and start the upload fresh:</p>
+          <pre><code>python scripts/create_agent.py --stage 2 --refresh-knowledge</code></pre>
+          <p>That deletes the old vector store before rebuilding it.</p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>It cites a rule that doesn't exist</summary>
+        <div>
+          <p>
+            Worth seeing, because it's the failure mode to watch for in production. File search
+            makes invention much less likely; it doesn't make it impossible. The fix is the habit:
+            ask the agent to quote the line it's relying on, which the instructions already tell it
+            to do, and spot-check against the source document. Step 9 turns that habit into tests.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Make the live app work &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Give the deployed API its own identity, add its settings, and require sign-in.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 8</p>
+      <h1>Make the live app work</h1>
+      <p class="lede">
+        Your site is deployed but its API can't reach Foundry, because in Azure there's no
+        <code>az login</code> to borrow. Give it an identity of its own, then stop strangers using it.
+      </p>
+      <p class="meta">About 20 minutes &middot; The most instructive step for real projects</p>
+
+      <h2>1. The problem, stated properly</h2>
+      <p>
+        Everything so far authenticated as <strong>you</strong>. <code>DefaultAzureCredential</code>
+        found your Azure CLI session and used it. Your deployed API is a process in a datacentre with
+        no user signed in, so that same code finds nothing and fails.
+      </p>
+      <p>
+        An application needs its own identity. Azure offers two kinds, and the difference is worth
+        knowing:
+      </p>
+      <table class="fields">
+        <tbody>
+          <tr>
+            <td>Managed identity</td>
+            <td>Azure holds the credential and rotates it. No secret ever exists for you to leak. Always preferred &mdash; but the <em>built-in</em> API of Static Web Apps doesn't support it.</td>
+          </tr>
+          <tr>
+            <td>Service principal</td>
+            <td>An identity with a client secret you hold. Works everywhere, including here. The secret is a liability you now own.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        You'll use a service principal because of that platform limitation, and you should know
+        it's the compromise, not the ideal. Section 6 says what to do differently in production.
+      </p>
+
+      <h2>2. Create the service principal</h2>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az ad sp create-for-rbac --name call-qa-reviewer-web</code></pre>
+      <p>You get JSON back:</p>
+      <pre><code>{
+  "appId": "11111111-2222-3333-4444-555555555555",
+  "displayName": "call-qa-reviewer-web",
+  "password": "a-long-secret-string",
+  "tenant": "99999999-8888-7777-6666-555555555555"
+}</code></pre>
+      <div class="warn">
+        <span class="note-title">Copy all three values now</span>
+        <p>
+          <code>password</code> is shown exactly once and cannot be retrieved later. If you lose it
+          you must generate a new one. Paste <code>appId</code>, <code>password</code> and
+          <code>tenant</code> somewhere temporary &mdash; and <strong>not</strong> into a file in your
+          repository.
+        </p>
+      </div>
+
+      <h2>3. Let it use your Foundry project</h2>
+      <p>
+        That identity exists but can do nothing. Grant it the same role you gave yourself in Step 1.
+        First get your Foundry resource's ID &mdash; substitute your own resource name:
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az cognitiveservices account show \
+  --name fdy-callqa-ab1234 \
+  --resource-group rg-call-qa-workshop \
+  --query id --output tsv</code></pre>
+      <p>Then grant the role, using that ID and your <code>appId</code>:</p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az role assignment create \
+  --assignee 11111111-2222-3333-4444-555555555555 \
+  --role "Azure AI User" \
+  --scope "/subscriptions/.../resourceGroups/rg-call-qa-workshop/providers/Microsoft.CognitiveServices/accounts/fdy-callqa-ab1234"</code></pre>
+      <p>
+        Scoping to the one resource rather than the whole subscription is deliberate. This identity
+        can use your Foundry project and nothing else &mdash; least privilege, applied where it costs you
+        nothing to apply it.
+      </p>
+
+      <h2>4. Add the settings to your web app</h2>
+      <ol>
+        <li>In <a href="https://portal.azure.com" target="_blank" rel="noopener">portal.azure.com</a>, open your Static Web App.</li>
+        <li>Select <strong>Settings</strong> &rarr; <strong>Environment variables</strong>.</li>
+        <li>Make sure you're on the <strong>Production</strong> environment.</li>
+        <li>Add these five, one at a time with <strong>+ Add</strong>:</li>
+      </ol>
+      <table class="fields">
+        <thead><tr><th>Name</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td><code>FOUNDRY_PROJECT_ENDPOINT</code></td><td>Your project endpoint from Step 1</td></tr>
+          <tr><td><code>FOUNDRY_AGENT_NAME</code></td><td><code>call-qa-reviewer</code></td></tr>
+          <tr><td><code>AZURE_CLIENT_ID</code></td><td>The <code>appId</code></td></tr>
+          <tr><td><code>AZURE_TENANT_ID</code></td><td>The <code>tenant</code></td></tr>
+          <tr><td><code>AZURE_CLIENT_SECRET</code></td><td>The <code>password</code></td></tr>
+        </tbody>
+      </table>
+      <ol start="5">
+        <li>Select <strong>Save</strong> and wait a moment for the API to restart.</li>
+      </ol>
+      <p>
+        Those last three names aren't arbitrary &mdash; <code>DefaultAzureCredential</code> looks for
+        exactly those variables. Same code, same <code>client.py</code>, different credential source
+        depending on where it runs. That's the whole appeal of the pattern.
+      </p>
+
+      <h2>5. Try your live app</h2>
+      <p>
+        Open your site's URL again and review a call. The calls list should populate and the agent
+        should answer.
+      </p>
+      <p>
+        It's on the public internet now, running on your subscription, scoring calls. Worth a pause.
+      </p>
+      <div class="note">
+        <span class="note-title">One real limitation</span>
+        <p>
+          The built-in API cuts requests off at about <strong>45 seconds</strong>. One or two calls
+          per request is comfortable; <em>Review all collections calls</em> may well time out in
+          production even though it worked in your Codespace. That's not a bug you can configure
+          away &mdash; the fix is a linked Functions app, or a queue and a background job for batch work.
+        </p>
+      </div>
+
+      <h2>6. Require sign-in</h2>
+      <p>
+        Right now anyone with the URL can spend your model budget and read your sample calls. Fix it
+        with a configuration file &mdash; no code.
+      </p>
+      <p>In your Codespace, replace the contents of <code>src/staticwebapp.config.json</code> with:</p>
+      <pre><code>{
+  "platform": { "apiRuntime": "python:3.10" },
+  "routes": [
+    { "route": "/guide/*", "allowedRoles": ["anonymous"] },
+    { "route": "/*", "allowedRoles": ["authenticated"] }
+  ],
+  "responseOverrides": {
+    "401": { "redirect": "/.auth/login/aad", "statusCode": 302 }
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/api/*", "/guide/*", "*.{css,js,svg,png,ico,mp3}"]
+  }
+}</code></pre>
+      <p>Then push it:</p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>git add src/staticwebapp.config.json
+git commit -m "Require sign-in"
+git push</code></pre>
+      <p>
+        Wait for Actions to go green, then open your site in a private browsing window. You're sent
+        to Microsoft Entra ID to sign in before you see anything. The guide stays public, so you can
+        still share these instructions.
+      </p>
+      <div class="note">
+        <span class="note-title">Authenticated is not the same as authorised</span>
+        <p>
+          <code>authenticated</code> means <em>anyone with a Microsoft account</em> &mdash; that's a
+          very large group. For anything real, invite specific users and require a custom role
+          instead. Read it as "no longer wide open", not "secure".
+        </p>
+      </div>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <ul>
+          <li>Your live site loads the calls list and reviews a call successfully.</li>
+          <li>Five environment variables are saved on the Production environment.</li>
+          <li>After the config push, a private window asks you to sign in.</li>
+          <li><code>/guide/</code> still opens without signing in.</li>
+        </ul>
+      </div>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>"Insufficient privileges" when creating the service principal</summary>
+        <div>
+          <p>
+            Your account can't register applications in Entra ID, which is common on work tenants.
+            Either ask an administrator to create one and send you the three values, or do the rest
+            of the workshop on a personal subscription. The app works fine in your Codespace
+            regardless &mdash; this step only affects the deployed copy.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>The live site still can't load calls</summary>
+        <div>
+          <p>Work through these in order:</p>
+          <ul>
+            <li>Check for typos in the five variable names. They're case-sensitive.</li>
+            <li>Confirm you saved on <strong>Production</strong>, not Preview.</li>
+            <li>Confirm the role assignment in section 3 succeeded &mdash; it's easy to paste the wrong scope.</li>
+            <li>Role changes take a minute or two. Wait, then reload.</li>
+            <li>Still stuck? Open <strong>Monitoring</strong> &rarr; <strong>Log stream</strong> on the Static Web App and read the actual error.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>It worked, then stopped</summary>
+        <div>
+          <p>
+            Client secrets expire &mdash; the default is a year or two. In a real system you'd track that
+            date and rotate ahead of it, which is precisely the chore managed identity removes. For
+            today, generate a fresh secret and update <code>AZURE_CLIENT_SECRET</code>.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I'm locked out after requiring sign-in</summary>
+        <div>
+          <p>
+            Visit <code>/.auth/login/aad</code> on your site to sign in directly. To undo it, revert
+            <code>src/staticwebapp.config.json</code> to the version on <code>main</code> and push.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>Requests time out on longer reviews</summary>
+        <div>
+          <p>
+            The 45-second limit. Ask for one call at a time. For production, link a separate Azure
+            Functions app &mdash; which also lets you use managed identity and drop the secret entirely.
+          </p>
+        </div>
+      </details>
+
+      <h2>What you'd change for production</h2>
+      <p>This workshop is a teaching sample. Before anything like it touches real call data:</p>
+      <ul>
+        <li>Link a <strong>separate Functions app</strong> so the API can use <strong>managed identity</strong>, and delete the service principal.</li>
+        <li>Keep any remaining secrets in <strong>Key Vault</strong>, not in app settings.</li>
+        <li>Replace <code>authenticated</code> with <strong>named users and custom roles</strong>.</li>
+        <li>Swap the mock tools for your real QA system, with a least-privilege account per tool.</li>
+        <li>Handle batch work with a <strong>queue</strong>, not a long web request.</li>
+        <li>Keep the human in the loop on anything that affects a person's employment. The agent drafts; a person decides.</li>
+      </ul>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

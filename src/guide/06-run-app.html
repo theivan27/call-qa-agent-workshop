@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Run the web app &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Run the static front end and the Azure Functions API together inside your Codespace.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 6</p>
+      <h1>Run the web app</h1>
+      <p class="lede">
+        A terminal is a hard sell to a QA manager. Put the same agent behind a web page that shows
+        every tool call as it happens.
+      </p>
+      <p class="meta">About 15 minutes &middot; Everything runs inside your Codespace</p>
+
+      <h2>1. What you're starting</h2>
+      <p>Two pieces, one command:</p>
+      <ul>
+        <li>
+          <strong><code>src/</code></strong> &mdash; the front end. Plain HTML, CSS and JavaScript, no
+          framework. (This guide is in there too, at <code>src/guide/</code>.)
+        </li>
+        <li>
+          <strong><code>api/</code></strong> &mdash; two Azure Functions. <code>GET /api/calls</code>
+          lists the sample calls; <code>POST /api/chat</code> runs the same tool loop the CLI used.
+        </li>
+      </ul>
+      <p>
+        The front end never talks to Foundry. It talks to your API, and the API talks to Foundry.
+        Keep that shape in your own projects &mdash; it's what stops credentials ending up in a browser.
+      </p>
+
+      <h2>2. Check the API's settings</h2>
+      <p>
+        You filled this in during Step 2, but it's the single most common reason this step fails, so
+        confirm it now. Open <code>api/local.settings.json</code> and check
+        <code>FOUNDRY_PROJECT_ENDPOINT</code> holds your real endpoint.
+      </p>
+      <div class="note">
+        <span class="note-title">Two files, deliberately</span>
+        <p>
+          The scripts read <code>.env</code>; the Functions host reads
+          <code>api/local.settings.json</code> and ignores <code>.env</code> entirely. That's a
+          Functions convention, not something this project invented. Locally the API signs in as you
+          via <code>az login</code> &mdash; in Step 8 you'll give the deployed version its own identity.
+        </p>
+      </div>
+
+      <h2>3. Start it</h2>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>swa start src --api-location api</code></pre>
+      <p>
+        The Static Web Apps CLI starts the front end and the Functions host together and puts them on
+        one address, which is how they'll be served in Azure. The first start takes thirty seconds or
+        so while the Python worker warms up. Wait for a line like:
+      </p>
+      <pre><code>Azure Static Web Apps emulator started at http://localhost:4280</code></pre>
+
+      <h2>4. Open it</h2>
+      <p>
+        Codespaces notices port <strong>4280</strong> and shows a notification with
+        <strong>Open in Browser</strong>. Select it. If you miss the notification, open the
+        <strong>Ports</strong> tab next to the terminal and select the globe icon on port 4280.
+      </p>
+      <p>
+        You'll get a <code>*.app.github.dev</code> URL rather than <code>localhost</code> &mdash; that's
+        Codespaces forwarding the port out of the container. The URL is private to your GitHub
+        account by default.
+      </p>
+
+      <h2>5. Review a call</h2>
+      <ol>
+        <li>Pick a call from <strong>Calls to review</strong> on the left.</li>
+        <li>Send the suggested request.</li>
+        <li>Watch <strong>What the agent did</strong> on the right.</li>
+      </ol>
+      <p>
+        That third panel is the point of this app. Every transcript read, knowledge search, saved
+        score and compliance flag appears in order, as it happens. Select <strong>Show
+        details</strong> on any entry to see the exact arguments the agent passed and what your code
+        returned.
+      </p>
+      <p>
+        Show that panel to anyone sceptical about letting an AI near their QA process. "It gave call
+        C-5533 a 44" invites an argument. "It gave it a 44, here are the four rules it cites and the
+        lines it quoted" is a conversation about the call instead.
+      </p>
+
+      <h3>Worth trying in the UI</h3>
+      <ul>
+        <li><code>C-5533</code> &mdash; the worst call in the set. Threats and a payment to a personal e-wallet: <code>CC-04</code> and <code>CC-06</code>, both high severity.</li>
+        <li><code>C-5531</code> &mdash; watch the card number come back masked in the tool result.</li>
+        <li><em>Mark agent AG-103 as failed and notify HR.</em> &mdash; refused here exactly as it was in the CLI.</li>
+        <li><strong>Start new review</strong> &mdash; clears the conversation so the agent isn't carrying context from the last call.</li>
+      </ul>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <ul>
+          <li>The app loads in your browser and the calls list is populated.</li>
+          <li>Sending a request produces a scored review.</li>
+          <li><strong>What the agent did</strong> lists tool calls with arguments and results.</li>
+          <li>Visiting <code>/guide/</code> on the same URL shows this guide.</li>
+        </ul>
+      </div>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>"Couldn't load calls"</summary>
+        <div>
+          <p>
+            The front end is up but the API isn't answering. Look at the terminal for Functions host
+            errors &mdash; they appear below the emulator banner. Most often the Python worker failed to
+            start because a package is missing:
+          </p>
+          <pre><code>pip install -r api/requirements.txt</code></pre>
+          <p>Then stop <code>swa start</code> with <strong>Ctrl+C</strong> and start it again.</p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>"FOUNDRY_PROJECT_ENDPOINT is not set"</summary>
+        <div>
+          <p>
+            The API is reading <code>api/local.settings.json</code>, not <code>.env</code>. Fill in
+            the endpoint there, then restart <code>swa start</code> &mdash; it only reads settings at
+            startup.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>"Agent not found"</summary>
+        <div>
+          <p>
+            Run <code>python scripts/create_agent.py --stage 3</code>, and make sure
+            <code>FOUNDRY_AGENT_NAME</code> is the same in <code>.env</code> and
+            <code>api/local.settings.json</code>. If you renamed the agent in one file only, this is
+            the error you get.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>Authentication errors in the terminal</summary>
+        <div>
+          <p>
+            Your CLI sign-in has lapsed. Run <code>az login --use-device-code</code> again, then
+            restart <code>swa start</code>.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>"swa: command not found"</summary>
+        <div>
+          <p>Re-run the environment setup, which installs it:</p>
+          <pre><code>bash .devcontainer/post-create.sh</code></pre>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>The request times out or takes forever</summary>
+        <div>
+          <p>
+            Reviewing several calls at once means many model calls in sequence. Start with one call.
+            Note the limit for later: once deployed, the built-in API cuts requests off at about 45
+            seconds, which <a href="07-deploy-portal.html">Step 7</a> comes back to.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

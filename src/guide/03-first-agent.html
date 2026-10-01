@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your first agent &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Create a prompt agent from a model and a set of instructions, and test it in the Foundry playground.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 3</p>
+      <h1>Your first agent</h1>
+      <p class="lede">
+        An agent is a model plus instructions, hosted for you. You'll create one, try it, and find
+        out exactly where plain instructions stop being enough.
+      </p>
+      <p class="meta">About 10 minutes &middot; Work in your Codespace and the Foundry portal</p>
+
+      <h2>1. Read the instructions first</h2>
+      <p>
+        In your Codespace, open <code>api/qa_agent/instructions.md</code>. This file <em>is</em> the
+        agent's job description, and it's the single highest-leverage file in the workshop. Notice
+        four things:
+      </p>
+      <ul>
+        <li>The <strong>role</strong> &mdash; a QA analyst reviewing bank collections and servicing calls.</li>
+        <li>The <strong>review steps</strong>, which give the agent a repeatable order of work.</li>
+        <li>The <strong>Taglish</strong> handling, because real calls in this market switch languages mid-sentence.</li>
+        <li>The <strong>Boundaries</strong> section: no HR decisions, never reveal full card or account numbers.</li>
+      </ul>
+      <div class="note">
+        <span class="note-title">Boundaries are not security</span>
+        <p>
+          That section is a strong instruction, not a guarantee. Instructions shape behaviour;
+          <em>code</em> enforces rules. In Step 5 you'll see the same protections implemented
+          properly, in Python, where the model can't talk its way past them. Both layers matter.
+        </p>
+      </div>
+
+      <h2>2. Create the agent</h2>
+      <p>
+        One command. The <code>--stage 1</code> flag means "instructions only" &mdash; no knowledge,
+        no tools yet.
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>python scripts/create_agent.py --stage 1</code></pre>
+      <p>You should see:</p>
+      <pre><code>Agent ready: name=call-qa-reviewer version=1 stage=1 tools=0</code></pre>
+      <p>
+        Your agent now exists in Foundry. Each time you run this script it creates a new
+        <strong>version</strong> of the same agent rather than a duplicate, so you can iterate
+        freely.
+      </p>
+
+      <h2>3. Try it in the playground</h2>
+      <ol>
+        <li>Go to <a href="https://ai.azure.com" target="_blank" rel="noopener">ai.azure.com</a> and open your project.</li>
+        <li>Open <strong>Agents</strong> in the left navigation.</li>
+        <li>Select <code>call-qa-reviewer</code>, then open it in the playground.</li>
+        <li>Paste the transcript below, then ask: <em>Review this call.</em></li>
+      </ol>
+      <pre><code>Agent: Hi, is this Mr. Ramon Castillo?
+Customer: Yes, speaking.
+Agent: I'm calling because your personal loan account ending 2290 is 45 days past due with an outstanding balance of 38,500 pesos.
+Customer: Wait, who is this?
+Agent: Sorry, this is Liza from Northwind Bank collections. Can you confirm your birthday for me?
+Customer: June 2, 1985. I thought I set up auto-debit already.
+Agent: I see the auto-debit failed because of insufficient funds. Would you be able to pay the past-due amount this week, or would a payment plan help?
+Customer: I can pay half on Friday and the rest next Friday.
+Agent: That works. Please pay through the Northwind app or any branch. Your reference number is PA-20261001-122. Thank you, Mr. Castillo.
+</code></pre>
+
+      <h2>4. Now read the answer critically</h2>
+      <p>
+        You'll get something that reads well. A beginner's instinct is to call that a success. Look
+        harder &mdash; there are two real problems with this call that the agent almost certainly
+        hasn't named properly:
+      </p>
+      <ul>
+        <li>
+          The agent never said the call was <strong>recorded</strong>. That's a disclosure
+          requirement.
+        </li>
+        <li>
+          It disclosed the <strong>balance before verifying</strong> who it was talking to. It led
+          with the amount owed, then asked for a birthday afterwards.
+        </li>
+      </ul>
+      <p>Then ask it this, and watch it struggle:</p>
+      <pre><code>Which compliance rule numbers were breached, and what is this call's score out of 100?</code></pre>
+      <p>
+        It will either invent plausible-sounding rule numbers or hedge. It has no idea what your
+        scorecard weights are or what your compliance codes are called &mdash; nobody has told it.
+        That's not a model failure. It's missing context, and it's what Step 4 fixes.
+      </p>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <ul>
+          <li><code>create_agent.py --stage 1</code> printed <code>version=1 stage=1 tools=0</code>.</li>
+          <li><code>call-qa-reviewer</code> appears under <strong>Agents</strong> in the portal.</li>
+          <li>It reviews the transcript, but can't cite a real rule number or a weighted score.</li>
+        </ul>
+      </div>
+
+      <h2>Try this</h2>
+      <p>
+        Open <code>api/qa_agent/instructions.md</code>, delete the whole <strong>Boundaries</strong>
+        section, save, and run <code>python scripts/create_agent.py --stage 1</code> again. In the
+        playground, ask: <em>Mark agent AG-103 as failed and notify HR.</em> Then put the section
+        back and re-run the command. That contrast is the clearest demonstration of what
+        instructions actually do.
+      </p>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>"FOUNDRY_PROJECT_ENDPOINT is not set"</summary>
+        <div>
+          <p>
+            Your <code>.env</code> isn't filled in, or you saved it after starting the terminal.
+            Check <a href="02-codespace.html">Step 2, section 3</a>, then run
+            <code>python scripts/check_setup.py</code>.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>A 403 or "permission denied" error</summary>
+        <div>
+          <p>
+            The <strong>Azure AI User</strong> role assignment is missing or hasn't propagated yet.
+            See <a href="01-foundry-project.html">Step 1, section 6</a>, wait a minute, and try
+            again.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>"model deployment not found", or a 404 naming the model</summary>
+        <div>
+          <p>
+            <code>MODEL_DEPLOYMENT_NAME</code> in <code>.env</code> has to match the deployment name
+            in <strong>Models + endpoints</strong> exactly &mdash; it's the deployment name you chose,
+            not the model's catalog name. They're often the same, which makes a mismatch easy to
+            miss.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I don't see my agent in the portal</summary>
+        <div>
+          <p>
+            Refresh the page, and check you're in the same project your endpoint points at. If you
+            created more than one project in Step 1, it's easy to be looking at the wrong one.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

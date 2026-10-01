@@ -31,18 +31,55 @@ across client programs). All data is fictional: Northwind Bank and Contoso BPO a
 - **Guardrails**: the instructions keep HR decisions with people; the code masks card and account
   numbers before the model sees them and validates every score.
 
-## Labs
+## Start here: the workshop guide
 
-| Lab | What you do | Time |
-|-----|-------------|------|
-| [0. Set up](labs/00-setup.md) | Foundry project, model deployment, local environment | 15 min |
-| [1. Your first agent](labs/01-first-agent.md) | Create a prompt agent with instructions only | 10 min |
-| [2. Add knowledge](labs/02-knowledge.md) | Ground it in the scorecard and checklist | 10 min |
-| [3. Add tools](labs/03-tools.md) | Let it read calls and save results | 20 min |
-| [4. Run the web app](labs/04-web-app.md) | Run the static web app and API locally | 15 min |
-| [5. Deploy](labs/05-deploy.md) | Publish to Azure Static Web Apps | 20 min |
-| [6. Evaluate](labs/06-evaluate.md) | Run test cases and check the guardrails | 10 min |
+The step-by-step instructions live in a static site in [`src/guide/`](src/guide/), written for
+attendees with no prior Azure experience. It deploys with the app, so the live site serves the app
+at `/` and the guide at `/guide`.
+
+To read it, open `/guide/` on the deployed site, or run `swa start src --api-location api` and open
+`/guide/` on port 4280. The files in [`labs/`](labs/) are now pointers into it.
+
+| Step | What you do | Time |
+|------|-------------|------|
+| [0. Prerequisites](src/guide/00-prerequisites.html) | Azure subscription, GitHub account, costs | 20 min |
+| [1. Create the project](src/guide/01-foundry-project.html) | Resource group, Foundry project, model deployment | 15 min |
+| [2. Open your Codespace](src/guide/02-codespace.html) | Fork, configure `.env`, sign in to Azure | 10 min |
+| [3. Your first agent](src/guide/03-first-agent.html) | A prompt agent with instructions only | 10 min |
+| [4. Add knowledge](src/guide/04-knowledge.html) | Ground it in the scorecard and checklist | 15 min |
+| [5. Add tools](src/guide/05-tools.html) | Let it read calls and save results | 20 min |
+| [6. Run the web app](src/guide/06-run-app.html) | The front end and API in your Codespace | 15 min |
+| [7. Deploy from the portal](src/guide/07-deploy-portal.html) | Create a Static Web App from your fork | 20 min |
+| [8. Make the live app work](src/guide/08-configure-app.html) | Identity, app settings, sign-in | 20 min |
+| [9. Evaluate](src/guide/09-evaluate.html) | Test cases, guardrails and traces | 15 min |
+| [10. Delete everything](src/guide/10-clean-up.html) | Clean-up, so nothing keeps billing you | 10 min |
 | [Optional: AI call recordings](labs/optional-audio.md) | Generate audio of the sample calls with Azure AI Speech | 10 min |
+
+### Running the workshop yourself
+
+Two things to change when you host this for your own attendees:
+
+1. Set `REPO` at the top of [`src/guide/steps.js`](src/guide/steps.js) to your own
+   `owner/repo` slug. Every fork link, Codespaces link and clone command in the guide follows it.
+2. Deploy this repo once (guide Step 7) and give attendees the resulting `/guide` URL, so they can
+   read the instructions before they have an Azure subscription of their own.
+
+## In GitHub Codespaces
+
+Attendees don't install anything. [`.devcontainer/`](.devcontainer/) builds an environment with
+Python 3.10, the Azure CLI, the Static Web Apps CLI and Azure Functions Core Tools, and creates
+`.env` and `api/local.settings.json` from the samples.
+
+On a fork, select **Code > Codespaces > Create codespace on main**. When it finishes:
+
+```bash
+# fill in .env and api/local.settings.json, then:
+az login --use-device-code
+python scripts/check_setup.py        # checks settings, sign-in and permissions
+```
+
+`check_setup.py` is the first thing to run when anything is misbehaving — it names the guide step
+that fixes each failure.
 
 ## Quick start (if you've done this before)
 
@@ -60,16 +97,18 @@ swa start src --api-location api                        # open http://localhost:
 ## Repository layout
 
 ```
+.devcontainer/       Codespaces environment (Python 3.10, Azure CLI, SWA CLI, Functions tools)
 api/                 Azure Functions (Python) used as the web app's API
   chat/              POST /api/chat
   calls/             GET  /api/calls
   qa_agent/          Shared agent code: clients, run loop, tools, instructions, sample calls
 knowledge/           Documents the agent searches (scorecard, checklist, coaching guide)
-scripts/             create_agent.py, chat_cli.py, evaluate.py
+scripts/             check_setup.py, create_agent.py, chat_cli.py, evaluate.py
 evals/               Test cases for evaluate.py
 src/                 Static front end (HTML, CSS, JavaScript) and staticwebapp.config.json
-labs/                Step-by-step instructions
-.github/workflows/   GitHub Actions deployment to Azure Static Web Apps
+  guide/             The attendee workshop guide, served at /guide
+labs/                Pointers into src/guide/ (the instructions used to live here)
+.github/workflows/   Manual fallback deploy; Azure writes the real one when you deploy (Step 7)
 ```
 
 ## Costs and clean-up

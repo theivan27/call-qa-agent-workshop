@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delete everything &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Remove every resource the workshop created so nothing keeps billing you.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 10</p>
+      <h1>Delete everything</h1>
+      <p class="lede">
+        The workshop cost you cents. Forgetting this page is what turns that into a monthly bill.
+        Five minutes, in this order.
+      </p>
+      <p class="meta">About 10 minutes &middot; Do it today, not next week</p>
+
+      <div class="warn">
+        <span class="note-title">Want to keep the app running for a demo?</span>
+        <p>
+          You can &mdash; the ongoing cost is small, mostly vector storage. But set a calendar reminder
+          to come back and do this, and make sure you finished the sign-in step in
+          <a href="08-configure-app.html">Step 8</a> so a public URL isn't spending your model budget.
+          Everything below will still be here when you need it.
+        </p>
+      </div>
+
+      <h2>1. Save anything you want to keep</h2>
+      <p>
+        Deleting the Azure resources doesn't touch your GitHub fork, so your code, your sixth tool and
+        your <code>CC-08</code> rule all survive. What won't survive: your agent and its versions,
+        your vector store, and your deployed site's URL.
+      </p>
+      <p>
+        If you changed anything in your Codespace that you haven't pushed, push it now &mdash; this is
+        your last chance before you delete the Codespace.
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>git add .
+git commit -m "Workshop changes"
+git push</code></pre>
+
+      <h2>2. Delete the resource group</h2>
+      <p>
+        This is the big one. It removes the Foundry resource, your project, the agent, the vector
+        store and the Static Web App in a single action &mdash; which is exactly why Step 1 had you put
+        everything in one group.
+      </p>
+      <ol>
+        <li>Go to <a href="https://portal.azure.com" target="_blank" rel="noopener">portal.azure.com</a> and open <strong>Resource groups</strong>.</li>
+        <li>Select <code>rg-call-qa-workshop</code>.</li>
+        <li>
+          Before deleting, glance down the list of resources. Anything here you didn't expect? If you
+          created a project in a second region in Step 1, it may be in a different group &mdash; note it
+          and come back for it.
+        </li>
+        <li>Select <strong>Delete resource group</strong> at the top.</li>
+        <li>Type the group's name to confirm, then <strong>Delete</strong>.</li>
+      </ol>
+      <p>It takes a few minutes. You can close the tab; it carries on.</p>
+      <p>Or, if you'd rather do it from the terminal:</p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az group delete --name rg-call-qa-workshop --yes --no-wait</code></pre>
+      <div class="warn">
+        <span class="note-title">This cannot be undone</span>
+        <p>
+          Deleting a resource group permanently destroys everything inside it. Read the resource list
+          before you confirm, and be certain the name is <code>rg-call-qa-workshop</code> and not a
+          group holding something you care about.
+        </p>
+      </div>
+
+      <h2>3. Delete the service principal</h2>
+      <p>
+        This one lives in Entra ID, <em>not</em> in your resource group, so the delete above left it
+        behind. It costs nothing, but it's a credential that can still authenticate &mdash; leaving
+        unused identities lying around is how real breaches start.
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az ad sp delete --id 11111111-2222-3333-4444-555555555555</code></pre>
+      <p>Use your own <code>appId</code>. Lost it? Find it by name:</p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az ad sp list --display-name call-qa-reviewer-web --query "[].appId" --output tsv</code></pre>
+      <p>Skipped Step 8? Then you never created one, and there's nothing to delete.</p>
+
+      <h2>4. Check nothing else is running</h2>
+      <p>
+        Resources sometimes end up outside the group you intended &mdash; particularly if you created a
+        second Foundry project while hunting for model availability. Check:
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az resource list --output table</code></pre>
+      <p>
+        Anything left from today, delete it. An empty table, or only resources you recognise from
+        before the workshop, means you're clear.
+      </p>
+
+      <h2>5. Stop or delete your Codespace</h2>
+      <p>Codespaces bill for the time they run and the storage they use, against your GitHub allowance.</p>
+      <ol>
+        <li>Go to <a href="https://github.com/codespaces" target="_blank" rel="noopener">github.com/codespaces</a>.</li>
+        <li>Find the one for your fork.</li>
+        <li>
+          Use the <strong>…</strong> menu: <strong>Stop codespace</strong> keeps your files and stops
+          the compute charge. <strong>Delete codespace</strong> removes the storage charge too.
+        </li>
+      </ol>
+      <p>
+        Delete it unless you plan to come back within a few days. Everything you pushed is on GitHub,
+        and a new Codespace rebuilds from your fork in minutes &mdash; you'd just need to redo
+        <code>.env</code> and <code>az login</code>.
+      </p>
+
+      <h2>6. Tidy up GitHub</h2>
+      <p>Optional, but worth doing while it's fresh:</p>
+      <ul>
+        <li>
+          The deployment token secret Azure created is now useless. Remove it under
+          <strong>Settings</strong> &rarr; <strong>Secrets and variables</strong> &rarr;
+          <strong>Actions</strong> on your fork.
+        </li>
+        <li>
+          The generated <code>azure-static-web-apps-*.yml</code> workflow will fail on every future
+          push, pointing at a web app that no longer exists. Delete the file, or leave it &mdash; a red
+          tick on a workshop fork harms nothing.
+        </li>
+        <li>
+          Revoke Azure's access to your GitHub account if you'd rather not leave it in place:
+          <strong>Settings</strong> &rarr; <strong>Applications</strong> &rarr;
+          <strong>Authorized OAuth Apps</strong>.
+        </li>
+      </ul>
+
+      <h2>7. Confirm with your own eyes</h2>
+      <p>
+        Costs take up to a day to settle, so don't expect zero immediately. Check in a couple of days:
+        in the portal, open <strong>Cost Management</strong> &rarr; <strong>Cost analysis</strong>, set
+        the range to this month and group by resource. Everything from today should be flat-lining.
+      </p>
+      <p>
+        Leave the budget alert from Step 1 in place even now. It costs nothing and it's the thing that
+        tells you if you missed something.
+      </p>
+
+      <div class="check">
+        <span class="note-title">Final checkpoint</span>
+        <ul>
+          <li><code>rg-call-qa-workshop</code> no longer appears under Resource groups.</li>
+          <li>The service principal is deleted.</li>
+          <li><code>az resource list</code> shows nothing from today.</li>
+          <li>Your Codespace is stopped or deleted.</li>
+          <li>Your fork still has your code.</li>
+        </ul>
+      </div>
+
+      <h2>You're done</h2>
+      <p>Today you built an agent that reads a call, judges it against your rules and files the result. Along the way:</p>
+      <ul>
+        <li><strong>Instructions</strong> define the job &mdash; and are the cheapest thing to iterate on.</li>
+        <li><strong>Knowledge</strong> turns generic feedback into citations, and lets policy live in files a manager owns.</li>
+        <li><strong>Tools</strong> are the real boundary of what an agent can do. The model proposes; your code decides.</li>
+        <li><strong>Guardrails in code beat guardrails in prompts.</strong> You saw one survive a deletion and the other vanish.</li>
+        <li><strong>Evaluation</strong> is what makes a demo into something you'd ship.</li>
+      </ul>
+      <p>
+        Your fork is yours to keep. The most useful next move is to swap in your own scorecard and
+        checklist from your actual QA process, re-run the knowledge step, and see how it does on a
+        transcript you already know the right answer to.
+      </p>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>The resource group won't delete</summary>
+        <div>
+          <p>
+            Usually a lock or a dependency. Open the group's <strong>Locks</strong> page and remove
+            any lock, then retry. If one resource is stubborn, delete that resource on its own first,
+            then the group.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I deleted the group but still see charges</summary>
+        <div>
+          <p>
+            Billing lags by up to 24 hours, and you'll still see charges for the hours before you
+            deleted. If new charges are still appearing after two days, something survived &mdash; run
+            <code>az resource list --output table</code> and check other resource groups.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>"az ad sp delete" says insufficient privileges</summary>
+        <div>
+          <p>
+            You could create it but not remove it, which happens on managed tenants. Ask an
+            administrator to delete the <code>call-qa-reviewer-web</code> app registration. It can't
+            reach anything useful now that the Foundry resource is gone, but it should still be
+            cleaned up.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I deleted the resource group but wanted to keep the app</summary>
+        <div>
+          <p>
+            Nothing is lost that matters. Your fork still has every file. Redo
+            <a href="01-foundry-project.html">Step 1</a> and
+            <a href="07-deploy-portal.html">Step 7</a> &mdash; second time round it's about twenty
+            minutes. The site URL will be different.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

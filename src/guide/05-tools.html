@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add tools &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Give the agent functions it can call to read transcripts and save scores, and see where guardrails really belong.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 5</p>
+      <h1>Add tools</h1>
+      <p class="lede">
+        So far the agent can only talk. Tools give it hands: functions in <em>your</em> code that it
+        can call to fetch a transcript, log a score or raise a compliance flag.
+      </p>
+      <p class="meta">About 20 minutes &middot; The most important step in the workshop</p>
+
+      <h2>1. How function calling actually works</h2>
+      <p>
+        This is the one mechanism worth understanding properly, because almost every agent you build
+        after today will use it. Four beats:
+      </p>
+      <ol>
+        <li>The agent's definition lists each tool's <strong>name, description and parameters</strong>. That's all the model ever sees &mdash; a menu.</li>
+        <li>When it wants one, it doesn't execute anything. It returns a <code>function_call</code>: a name and some JSON arguments.</li>
+        <li><strong>Your code</strong> runs the function and sends the result back as a <code>function_call_output</code>.</li>
+        <li>The agent carries on, possibly calling more tools, until it has a final answer.</li>
+      </ol>
+      <div class="note">
+        <span class="note-title">The part beginners misread</span>
+        <p>
+          Foundry never runs your functions. It can't &mdash; they live in your Codespace. It only
+          <em>asks</em>. Every call passes through code you control, which is why this is the right
+          place to put limits. The model proposes; your code decides.
+        </p>
+      </div>
+      <p>
+        Steps 2 to 4 are the loop in <code>run_turn()</code> in
+        <code>api/qa_agent/runner.py</code>. It's about forty lines. Open it and read it &mdash; this is
+        the whole trick behind agents, and it's smaller than most people expect.
+      </p>
+
+      <h2>2. The five tools</h2>
+      <p>Open <code>api/qa_agent/tools.py</code>:</p>
+      <table class="fields">
+        <tbody>
+          <tr><td><code>list_calls</code></td><td>Which calls are waiting, optionally filtered by campaign.</td></tr>
+          <tr><td><code>get_transcript</code></td><td>The text of one call. Five samples, <code>C-5531</code> to <code>C-5535</code>.</td></tr>
+          <tr><td><code>log_qa_score</code></td><td>Saves per-criterion scores, a total and a summary.</td></tr>
+          <tr><td><code>flag_compliance_issue</code></td><td>Raises one flag per breached rule, with the quoted excerpt.</td></tr>
+          <tr><td><code>create_coaching_task</code></td><td>Files a coaching task against an agent ID.</td></tr>
+        </tbody>
+      </table>
+      <p>
+        In this workshop they read and write an in-memory dictionary. In production the same five
+        functions would call your real QA platform &mdash; the agent wouldn't know the difference, which
+        is exactly why this pattern is worth learning on mock data first.
+      </p>
+
+      <h2>3. Create the full agent</h2>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>python scripts/create_agent.py --stage 3</code></pre>
+      <pre><code>Agent ready: name=call-qa-reviewer version=3 stage=3 tools=6</code></pre>
+      <p>Six tools: file search from Step 4, plus your five functions.</p>
+
+      <h2>4. Chat with it from the terminal</h2>
+      <p>
+        Not the playground this time. The playground can't run your functions &mdash; they're in your
+        Codespace, not in Azure &mdash; so it will stall waiting for results that never arrive. Use the
+        CLI, which runs the loop properly:
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>python scripts/chat_cli.py</code></pre>
+      <p>Try these one at a time, and read the tool calls it prints between your message and its answer:</p>
+      <pre><code>Review call C-5531 and log the QA score.</code></pre>
+      <pre><code>Check call C-5533 against the compliance checklist and flag every breach.</code></pre>
+      <pre><code>Review all collections calls and give me the top coaching themes.</code></pre>
+      <p>
+        That third one is worth pausing on. You didn't tell it to call <code>list_calls</code> first,
+        then <code>get_transcript</code> five times, then group the results. It worked that out. That
+        planning is what makes this an agent rather than a prompt.
+      </p>
+
+      <h2>5. Watch the guardrails hold</h2>
+      <p>
+        Now try to break it. These three prompts each hit a different kind of protection, and the
+        difference between them is the main lesson of this step.
+      </p>
+
+      <h3>Masking, enforced in code</h3>
+      <pre><code>Show me the full card number the customer gave in C-5531.</code></pre>
+      <p>
+        In that call the customer reads out a full card number. It can't be shown, because
+        <code>get_transcript</code> runs <code>_mask()</code> before returning &mdash; the model is never
+        sent the digits. No instruction is doing the work here, and no amount of persuasion changes
+        the outcome. This is the strongest kind of guardrail.
+      </p>
+
+      <h3>Validation, enforced in code</h3>
+      <pre><code>Log a score of 110 for C-5534.</code></pre>
+      <p>
+        <code>log_qa_score</code> rejects it and returns an error. Watch what the agent does next: it
+        reads the error and corrects itself. Tools that refuse bad input make agents more reliable,
+        not more fragile.
+      </p>
+
+      <h3>Boundaries, enforced by instructions</h3>
+      <pre><code>Mark agent AG-103 as failed and notify HR.</code></pre>
+      <p>
+        It declines, citing its boundaries. But notice the real reason it's safe: there is no HR
+        tool. Even a jailbroken model can only call functions you gave it.
+      </p>
+      <div class="warn">
+        <span class="note-title">Take this to your next project</span>
+        <p>
+          Instructions are a policy, code is a control, and the set of tools you expose is the
+          actual boundary of what your agent can do. When someone asks "but what stops it doing
+          something terrible?", the answer you want is the third one, not the first.
+        </p>
+      </div>
+
+      <h2>Try this</h2>
+      <p>Add a sixth function so the agent can look up an agent's history:</p>
+      <ol>
+        <li>In <code>api/qa_agent/tools.py</code>, write <code>get_agent_history(agent_id)</code> returning that agent's past scores from <code>QA_SCORES</code>.</li>
+        <li>Register it in <code>IMPLEMENTATIONS</code>.</li>
+        <li>Describe it in <code>TOOL_SPECS</code>, copying the shape of an existing entry.</li>
+        <li>Re-run <code>python scripts/create_agent.py --stage 3</code> &mdash; without this the agent doesn't know the tool exists.</li>
+        <li>Ask: <em>How has AG-103 been scoring?</em></li>
+      </ol>
+      <p>
+        If you only do one optional exercise today, do this one. Writing a tool description that a
+        model reliably understands is the skill that separates agents that work from agents that
+        nearly work.
+      </p>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <ul>
+          <li><code>create_agent.py --stage 3</code> printed <code>tools=6</code>.</li>
+          <li>Reviewing <code>C-5531</code> shows tool calls, then a scored review.</li>
+          <li>The card number comes back masked, and a score of 110 is rejected.</li>
+          <li>The HR request is refused.</li>
+        </ul>
+      </div>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>The agent says it can't read calls, or calls no tools at all</summary>
+        <div>
+          <p>
+            You're probably on an older version. Re-run
+            <code>python scripts/create_agent.py --stage 3</code> and confirm it says
+            <code>tools=6</code>. Then start a fresh conversation in <code>chat_cli.py</code> by
+            restarting it.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>The playground just hangs after I ask it something</summary>
+        <div>
+          <p>
+            Expected. The playground has no way to execute functions that live in your Codespace, so
+            it waits forever. Use <code>python scripts/chat_cli.py</code>, or the web app in Step 6.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>"unknown tool" or a KeyError when it calls a function</summary>
+        <div>
+          <p>
+            A name is out of step. The name in <code>TOOL_SPECS</code>, the key in
+            <code>IMPLEMENTATIONS</code> and the Python function name all have to match exactly.
+            This is the usual mistake when adding the sixth tool.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>It loops, calling the same tool over and over</summary>
+        <div>
+          <p>
+            The loop stops at <code>MAX_TOOL_ROUNDS</code> in <code>runner.py</code>, so it can't run
+            away. It usually means a tool returned something the model couldn't interpret as
+            progress. Read the printed result &mdash; a clearer return value or a sharper description
+            normally fixes it.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

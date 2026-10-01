@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Call QA Agent Workshop</title>
+  <meta name="description" content="Build an AI call-QA agent with Microsoft Foundry and deploy it to Azure, step by step.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Start here</p>
+      <h1>Build a call QA agent, then put it on the internet</h1>
+      <p class="lede">
+        By the end of today you'll have an AI agent that reviews recorded contact-center calls
+        against a QA scorecard and a compliance checklist &mdash; running on your own Azure
+        subscription, behind your own web app.
+      </p>
+      <p class="meta">About 2 hours 45 minutes &middot; No prior Azure experience needed</p>
+
+      <h2>The scenario</h2>
+      <p>
+        Northwind Bank outsources collections and servicing calls to Contoso BPO. Someone has to
+        listen to those calls and score them: was the recording disclosure read, was the customer
+        verified before any balance was discussed, was the agent respectful? Human QA teams can
+        only sample a few percent of calls.
+      </p>
+      <p>
+        You'll build the agent that does the first pass. It reads a transcript, scores it against
+        the scorecard, cites the compliance rules it broke, and files coaching tasks. Both names
+        are fictional and every call is sample data.
+      </p>
+
+      <h2>What you'll actually end up with</h2>
+      <pre><code> Browser                    Azure Functions API           Microsoft Foundry
+┌──────────────────┐      ┌────────────────────────┐    ┌──────────────────────┐
+│ Calls to review  │ ───▶ │ runs the tool loop     │ ─▶ │ Your agent           │
+│ Chat with agent  │      │ executes your code     │ ◀─ │  model + instructions│
+│ What it did      │ ◀─── │ on the sample calls    │    │  knowledge + tools   │
+└──────────────────┘      └────────────────────────┘    └──────────────────────┘</code></pre>
+      <p>
+        Three ideas carry the whole workshop. <strong>Instructions</strong> tell the agent its job.
+        <strong>Knowledge</strong> grounds it in your organization's rules, so it cites
+        <code>CC-02</code> instead of inventing a policy. <strong>Tools</strong> are functions in
+        your own code that the agent can call to read a call or save a score &mdash; the agent decides
+        when, your code decides what's allowed.
+      </p>
+
+      <h2>The steps</h2>
+      <ul class="card-grid">
+        <li><a class="card" href="00-prerequisites.html">
+          <span class="card-num">Step 0 &middot; 20 min</span>
+          <span class="card-title">Prerequisites</span>
+          <span class="card-blurb">An Azure subscription, a GitHub account, and what this will cost you.</span>
+        </a></li>
+        <li><a class="card" href="01-foundry-project.html">
+          <span class="card-num">Step 1 &middot; 15 min</span>
+          <span class="card-title">Create the project</span>
+          <span class="card-blurb">A resource group, a Foundry project and your first model deployment.</span>
+        </a></li>
+        <li><a class="card" href="02-codespace.html">
+          <span class="card-num">Step 2 &middot; 10 min</span>
+          <span class="card-title">Open your Codespace</span>
+          <span class="card-blurb">Fork the repo and get a ready-made dev environment in the browser.</span>
+        </a></li>
+        <li><a class="card" href="03-first-agent.html">
+          <span class="card-num">Step 3 &middot; 10 min</span>
+          <span class="card-title">Your first agent</span>
+          <span class="card-blurb">A model plus instructions. Watch where it falls short.</span>
+        </a></li>
+        <li><a class="card" href="04-knowledge.html">
+          <span class="card-num">Step 4 &middot; 15 min</span>
+          <span class="card-title">Add knowledge</span>
+          <span class="card-blurb">Give it your scorecard and checklist so it cites real rules.</span>
+        </a></li>
+        <li><a class="card" href="05-tools.html">
+          <span class="card-num">Step 5 &middot; 20 min</span>
+          <span class="card-title">Add tools</span>
+          <span class="card-blurb">Functions it can call to read calls and save results.</span>
+        </a></li>
+        <li><a class="card" href="06-run-app.html">
+          <span class="card-num">Step 6 &middot; 15 min</span>
+          <span class="card-title">Run the web app</span>
+          <span class="card-blurb">The front end and API, running in your Codespace.</span>
+        </a></li>
+        <li><a class="card" href="07-deploy-portal.html">
+          <span class="card-num">Step 7 &middot; 20 min</span>
+          <span class="card-title">Deploy from the portal</span>
+          <span class="card-blurb">Create a Static Web App that builds from your fork.</span>
+        </a></li>
+        <li><a class="card" href="08-configure-app.html">
+          <span class="card-num">Step 8 &middot; 20 min</span>
+          <span class="card-title">Make the live app work</span>
+          <span class="card-blurb">Give the deployed API an identity, then require sign-in.</span>
+        </a></li>
+        <li><a class="card" href="09-evaluate.html">
+          <span class="card-num">Step 9 &middot; 15 min</span>
+          <span class="card-title">Evaluate</span>
+          <span class="card-blurb">Test cases, broken guardrails, and traces.</span>
+        </a></li>
+        <li><a class="card" href="10-clean-up.html">
+          <span class="card-num">Step 10 &middot; 10 min</span>
+          <span class="card-title">Delete everything</span>
+          <span class="card-blurb">Stop the billing. Do not skip this one.</span>
+        </a></li>
+      </ul>
+
+      <div class="note">
+        <span class="note-title">Your progress is saved</span>
+        <p>
+          Tick <em>I've finished this step</em> at the bottom of each page and the sidebar keeps
+          track. It's stored in this browser only &mdash; it isn't sent anywhere, and it won't follow
+          you to another machine.
+        </p>
+      </div>
+
+      <div class="cost">
+        <span class="note-title">About money</span>
+        <p>
+          Everything here runs on pay-as-you-go Azure services. Doing the whole workshop once
+          typically costs well under a dollar in model usage, and the Static Web Apps Free plan
+          costs nothing. The risk isn't today &mdash; it's leaving resources running afterwards, which
+          is why <a href="10-clean-up.html">Step 10</a> exists.
+        </p>
+      </div>
+
+      <h2>If you get stuck</h2>
+      <p>
+        Every step ends with a <strong>Checkpoint</strong> telling you what you should be seeing,
+        and a <strong>If something went wrong</strong> section for the usual failures. Beginners most
+        often hit two things: a missing role assignment (<a href="01-foundry-project.html">Step 1</a>)
+        and a wrong project endpoint (<a href="02-codespace.html">Step 2</a>). If an error mentions
+        permissions or <code>401</code>, start there.
+      </p>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

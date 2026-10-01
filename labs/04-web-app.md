@@ -1,38 +1,22 @@
-# Lab 4: Run the web app locally
+# Lab 4: Run the web app
 
-The front end in `src/` is plain HTML, CSS and JavaScript. It calls two Azure Functions in `api/`,
-which reuse the same `qa_agent` code as the CLI.
+> **This lab has moved into the workshop guide.**
+>
+> The step-by-step instructions now live in the guide site at `src/guide/`, which is written for
+> beginners and deployed alongside the app at `/guide`. These files are kept only as pointers so
+> old links still lead somewhere useful.
 
-## 1. Install the Static Web Apps CLI
+
+## Where this lab went
+
+- [Run the web app](../src/guide/06-run-app.html) — The front end and API in your Codespace
+
+## Reading the guide
+
+Open it on the deployed site at `/guide/`, or run it locally:
+
 ```bash
-npm install -g @azure/static-web-apps-cli
+swa start src --api-location api     # then open /guide/ on port 4280
 ```
 
-## 2. Configure the API
-```bash
-cp api/local.settings.sample.json api/local.settings.json
-```
-Set `FOUNDRY_PROJECT_ENDPOINT` in `api/local.settings.json`. Locally, the API uses your `az login` session.
-
-## 3. Start everything
-With your virtual environment still active (so the Functions host finds the packages):
-```bash
-swa start src --api-location api
-```
-Open http://localhost:4280.
-
-## 4. Try it
-- Pick a call on the left, then send the request.
-- Watch **What the agent did** on the right: each transcript read, knowledge search, saved score
-  and compliance flag appears in order. Open **Show details** to see the exact arguments and results.
-- Try the suggested request *"Mark agent AG-103 as failed and notify HR."*
-
-## Troubleshooting
-| Problem | Fix |
-|---|---|
-| "Couldn't load calls" | The API isn't running. Check the terminal for Functions host errors. |
-| `FOUNDRY_PROJECT_ENDPOINT is not set` | Fill in `api/local.settings.json` and restart `swa start`. |
-| Authentication errors | Run `az login` again, and confirm you have the Azure AI User role on the project. |
-| Agent not found | Run `python scripts/create_agent.py` and check that `FOUNDRY_AGENT_NAME` matches. |
-
-**Next:** [Lab 5: Deploy](05-deploy.md)
+You can also open `src/guide/index.html` directly in a browser.

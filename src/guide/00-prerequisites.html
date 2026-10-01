@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prerequisites &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Create an Azure subscription and a GitHub account, and understand what the workshop costs.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 0</p>
+      <h1>Prerequisites</h1>
+      <p class="lede">
+        Two accounts and one decision about money. If you already have an Azure subscription you
+        can create resources in, skim this and move on.
+      </p>
+      <p class="meta">About 20 minutes &middot; Do this before the workshop if you can</p>
+
+      <div class="note">
+        <span class="note-title">Doing this the night before?</span>
+        <p>
+          Please do. Card verification and subscription activation can take a few minutes, and
+          occasionally much longer. Everything on this page is account admin &mdash; nothing here is
+          about agents, so it's the ideal thing to get out of the way early.
+        </p>
+      </div>
+
+      <h2>1. A GitHub account</h2>
+      <p>
+        You'll fork the workshop repository and edit it in <strong>GitHub Codespaces</strong>, a dev
+        environment that runs in your browser. That means no Python, Node or Azure CLI installs on
+        your laptop.
+      </p>
+      <ol>
+        <li>If you don't have one, sign up at <a href="https://github.com/signup" target="_blank" rel="noopener">github.com/signup</a>.</li>
+        <li>Verify your email address. Codespaces won't start until you do.</li>
+      </ol>
+      <p>
+        Free personal accounts include a monthly allowance of Codespaces hours, which is more than
+        enough for this workshop. See
+        <a href="https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-codespaces/about-billing-for-github-codespaces" target="_blank" rel="noopener">GitHub's billing docs</a>
+        for the current limits. You'll stop your Codespace in Step 10.
+      </p>
+
+      <h2>2. An Azure subscription</h2>
+      <p>
+        A <strong>subscription</strong> is the thing Azure bills. Every resource you create lives in
+        one. You need a subscription where you're allowed to create resources &mdash; if you're using
+        a work account, that permission is not a given.
+      </p>
+
+      <h3>If you're starting from nothing</h3>
+      <ol>
+        <li>Go to <a href="https://azure.microsoft.com/free" target="_blank" rel="noopener">azure.microsoft.com/free</a> and select <strong>Start free</strong>.</li>
+        <li>Sign in with a Microsoft account, or create one.</li>
+        <li>
+          Fill in your profile, then verify by <strong>phone</strong> and by <strong>card</strong>.
+          The card is for identity verification. You are not moved to paid rates until you choose
+          to upgrade.
+        </li>
+        <li>Accept the agreement. Activation usually takes a couple of minutes.</li>
+        <li>Go to <a href="https://portal.azure.com" target="_blank" rel="noopener">portal.azure.com</a>. You should land on a dashboard.</li>
+      </ol>
+      <p>
+        A new free account comes with a credit to spend in your first 30 days, plus a set of
+        services that are free for 12 months. The credit comfortably covers this workshop.
+      </p>
+
+      <h3>If you're using a work or school account</h3>
+      <p>Check two things before the workshop, because only an administrator can fix them:</p>
+      <ul>
+        <li>
+          <strong>Can you see a subscription?</strong> In the portal, search for
+          <em>Subscriptions</em>. If the list is empty, you don't have access to one.
+        </li>
+        <li>
+          <strong>Can you create things in it?</strong> You need the <strong>Contributor</strong>
+          role (or Owner) on a subscription or resource group. Open the subscription, select
+          <strong>Access control (IAM)</strong> &rarr; <strong>View my access</strong>.
+        </li>
+      </ul>
+      <div class="warn">
+        <span class="note-title">The one that bites people</span>
+        <p>
+          Creating the resources in Step 1 needs Contributor. Step 1 also has you grant yourself a
+          role, which needs <strong>Owner</strong> or <strong>User Access Administrator</strong>. If
+          your work subscription only gives you Contributor, use a personal free subscription for
+          the workshop instead &mdash; it's far quicker than waiting on an admin.
+        </p>
+      </div>
+
+      <h2>3. Know what you're spending</h2>
+      <p>Three things in this workshop can cost money, and only the first one really does:</p>
+      <table class="fields">
+        <thead>
+          <tr><th>What</th><th>How it's charged</th><th>Workshop cost</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Model usage</td>
+            <td>Per token, as the agent reads and writes</td>
+            <td>Cents. A small model like <code>gpt-4.1-mini</code> on short transcripts is very cheap.</td>
+          </tr>
+          <tr>
+            <td>File search</td>
+            <td>Per GB of vector storage per day</td>
+            <td>Three markdown files. Negligible, but it bills daily until deleted.</td>
+          </tr>
+          <tr>
+            <td>Static Web Apps</td>
+            <td>Free plan</td>
+            <td>Nothing.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        So the real cost of this workshop is <strong>forgetting to delete things</strong>. Two
+        habits protect you, and you'll set both up in Step 1: put everything in one resource group
+        so a single delete removes it all, and set a budget alert.
+      </p>
+
+      <h2>4. What you do not need</h2>
+      <p>
+        No Python, Node.js, Azure CLI, Docker or Git installed locally &mdash; Codespaces brings all of
+        it. You need a browser and a reasonable internet connection. Chrome and Edge are the
+        safest choices for Codespaces.
+      </p>
+
+      <h2>5. Helpful background</h2>
+      <p>
+        You don't need to be a developer. You will read some Python and run commands that are given
+        to you verbatim. If these four words mean nothing yet, that's fine &mdash; they'll make sense
+        as you go:
+      </p>
+      <table class="fields">
+        <tbody>
+          <tr><td>Resource group</td><td>A folder for Azure resources. Deleting it deletes everything inside.</td></tr>
+          <tr><td>Resource</td><td>One thing you created: a Foundry project, a web app, a database.</td></tr>
+          <tr><td>Role assignment</td><td>Permission for a person or app to use a resource.</td></tr>
+          <tr><td>Endpoint</td><td>The URL your code calls to reach a resource.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <p>Before moving on, confirm all three:</p>
+        <ul>
+          <li>You can sign in at <a href="https://github.com" target="_blank" rel="noopener">github.com</a> and your email is verified.</li>
+          <li>You can sign in at <a href="https://portal.azure.com" target="_blank" rel="noopener">portal.azure.com</a>.</li>
+          <li>Searching for <em>Subscriptions</em> in the portal shows at least one subscription.</li>
+        </ul>
+      </div>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>My card was declined, or verification keeps failing</summary>
+        <div>
+          <p>
+            Virtual and prepaid cards are often rejected. Use a normal credit or debit card. Some
+            banks block the verification charge as suspicious &mdash; approving it in your banking app
+            and retrying usually works. If it still fails, contact
+            <a href="https://azure.microsoft.com/support/create-ticket/" target="_blank" rel="noopener">Azure support</a>;
+            they can verify accounts manually.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>The Subscriptions list is empty</summary>
+        <div>
+          <p>
+            Usually you're signed in to the wrong tenant. Select your account picture in the portal
+            &rarr; <strong>Switch directory</strong>, and check the other directories listed. If
+            you're on a work account and there's genuinely nothing, ask whoever manages Azure for
+            Contributor access on a resource group, or create a personal free subscription.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I already used my free trial and can't start another</summary>
+        <div>
+          <p>
+            That's fine. Switch the subscription to pay-as-you-go. This workshop's actual usage is a
+            matter of cents, provided you complete Step 10. Set the budget alert in Step 1 so you
+            find out immediately if that stops being true.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

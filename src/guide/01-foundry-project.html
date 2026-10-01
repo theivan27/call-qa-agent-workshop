@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create the project &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Create a resource group, a Microsoft Foundry project and a model deployment in the portal.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 1</p>
+      <h1>Create the project</h1>
+      <p class="lede">
+        A resource group to hold everything, a Foundry project to host your agent, and a model for
+        it to think with. All in the portal &mdash; no commands yet.
+      </p>
+      <p class="meta">About 15 minutes &middot; You'll finish with two values to copy into Step 2</p>
+
+      <h2>1. Create a resource group</h2>
+      <p>
+        Do this first and put <em>everything</em> in it. In Step 10 you delete this one group and
+        the whole workshop disappears, which is the difference between a workshop that cost you
+        cents and one that quietly bills you for months.
+      </p>
+      <ol>
+        <li>Go to <a href="https://portal.azure.com" target="_blank" rel="noopener">portal.azure.com</a>.</li>
+        <li>In the top search box, type <strong>Resource groups</strong> and select it.</li>
+        <li>Select <strong>+ Create</strong>.</li>
+        <li>Fill in the form:</li>
+      </ol>
+      <table class="fields">
+        <tbody>
+          <tr><td>Subscription</td><td>Yours. If there are several, pick the one you're happy to spend from.</td></tr>
+          <tr><td>Resource group</td><td><code>rg-call-qa-workshop</code></td></tr>
+          <tr><td>Region</td><td>Somewhere near you, for example <em>Southeast Asia</em>. This only sets where the group's metadata lives.</td></tr>
+        </tbody>
+      </table>
+      <ol start="5">
+        <li>Select <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+      </ol>
+
+      <h2>2. Set a budget alert</h2>
+      <p>Two minutes now buys you peace of mind for the rest of the month.</p>
+      <ol>
+        <li>Search for <strong>Cost Management</strong> and open it.</li>
+        <li>Select <strong>Budgets</strong> &rarr; <strong>+ Add</strong>.</li>
+        <li>Scope it to your subscription. Name it <code>workshop-budget</code>, and set the amount to something small but real &mdash; <strong>5</strong> in your currency is plenty.</li>
+        <li>Add an alert condition at <strong>80%</strong> of budget and enter your email address.</li>
+        <li>Select <strong>Create</strong>.</li>
+      </ol>
+      <div class="note">
+        <span class="note-title">What this does and doesn't do</span>
+        <p>
+          A budget alert emails you. It does not cap spending or switch anything off. It's a smoke
+          detector, not a sprinkler.
+        </p>
+      </div>
+
+      <h2>3. Create the Foundry project</h2>
+      <p>
+        A <strong>project</strong> is your workspace for agents, models and knowledge. Creating one
+        also creates the underlying <strong>Foundry resource</strong> &mdash; the billable Azure thing
+        the project sits on.
+      </p>
+      <ol>
+        <li>Go to the Foundry portal at <a href="https://ai.azure.com" target="_blank" rel="noopener">ai.azure.com</a> and sign in with the same account.</li>
+        <li>Select <strong>+ Create new</strong>, then choose to create a <strong>Foundry project</strong>.</li>
+        <li>
+          Before you confirm, open <strong>Advanced options</strong>. This matters &mdash; it's where
+          you point the new resource at the group you just made:
+        </li>
+      </ol>
+      <table class="fields">
+        <tbody>
+          <tr><td>Project name</td><td><code>call-qa-project</code></td></tr>
+          <tr><td>Foundry resource</td><td>A new one. The name has to be globally unique, so add something of your own: <code>fdy-callqa-ab1234</code>.</td></tr>
+          <tr><td>Subscription</td><td>The same one as your resource group.</td></tr>
+          <tr><td>Resource group</td><td><code>rg-call-qa-workshop</code></td></tr>
+          <tr><td>Region</td><td>See the note below.</td></tr>
+        </tbody>
+      </table>
+      <ol start="4">
+        <li>Select <strong>Create</strong> and wait. This takes a minute or two.</li>
+      </ol>
+      <div class="warn">
+        <span class="note-title">Choosing a region</span>
+        <p>
+          Models aren't available everywhere, and the nearest region isn't always the best choice.
+          If you can't find <code>gpt-4.1-mini</code> in the next section, the region is usually why
+          &mdash; <em>East US 2</em> and <em>Sweden Central</em> tend to carry the widest selection.
+          Latency doesn't matter for a workshop, so favour availability over proximity.
+        </p>
+      </div>
+
+      <h2>4. Deploy a model</h2>
+      <p>
+        A model <strong>deployment</strong> is your own named endpoint for a model. Your agent will
+        refer to it by that name.
+      </p>
+      <ol>
+        <li>In your project, open <strong>Models + endpoints</strong> in the left navigation.</li>
+        <li>Select <strong>+ Deploy model</strong> &rarr; <strong>Deploy base model</strong>.</li>
+        <li>Search for <code>gpt-4.1-mini</code> and select it, then <strong>Confirm</strong>.</li>
+        <li>
+          Leave the <strong>Deployment name</strong> as <code>gpt-4.1-mini</code>. If you change it,
+          write down what you chose &mdash; you'll need it in Step 2.
+        </li>
+        <li>Select <strong>Deploy</strong>.</li>
+      </ol>
+      <p>
+        Any small, cheap chat model works here. If <code>gpt-4.1-mini</code> isn't offered, pick
+        another mini or small model and use its deployment name throughout.
+      </p>
+
+      <h2>5. Copy your two settings</h2>
+      <p>Step 2 needs exactly two values. Collect them now and paste them somewhere temporary.</p>
+      <p>
+        <strong>The project endpoint.</strong> On your project's <strong>Overview</strong> page in
+        the Foundry portal, find the endpoint and copy it. It looks like this:
+      </p>
+      <pre><code>https://fdy-callqa-ab1234.services.ai.azure.com/api/projects/call-qa-project</code></pre>
+      <div class="warn">
+        <span class="note-title">Get this one exactly right</span>
+        <p>
+          The Overview page may show several URLs. You want the one containing
+          <code>/api/projects/</code>. A plain <code>https://&lt;name&gt;.services.ai.azure.com</code>
+          with no project path is the resource endpoint, not the project endpoint, and it will fail
+          later with a confusing error. Copy it with the button rather than retyping it.
+        </p>
+      </div>
+      <p>
+        <strong>The model deployment name.</strong> Whatever you left in the box in section 4 &mdash;
+        <code>gpt-4.1-mini</code> unless you changed it.
+      </p>
+
+      <h2>6. Give yourself permission to use it</h2>
+      <p>
+        This catches almost everyone. Creating a resource makes you its <strong>Owner</strong>,
+        which lets you manage it &mdash; but managing and <em>using</em> are different permissions in
+        Azure. Calling the agent API needs the <strong>Azure AI User</strong> role, and Owner
+        doesn't include it.
+      </p>
+      <ol>
+        <li>Back in <a href="https://portal.azure.com" target="_blank" rel="noopener">portal.azure.com</a>, open your resource group <code>rg-call-qa-workshop</code>.</li>
+        <li>Select the Foundry resource you created (<code>fdy-callqa-ab1234</code>).</li>
+        <li>Select <strong>Access control (IAM)</strong> in the left navigation.</li>
+        <li>Select <strong>+ Add</strong> &rarr; <strong>Add role assignment</strong>.</li>
+        <li>In the <strong>Role</strong> list, search for <strong>Azure AI User</strong> and select it. Then <strong>Next</strong>.</li>
+        <li>Leave <strong>User, group, or service principal</strong> selected and choose <strong>+ Select members</strong>. Find yourself, select your account, then <strong>Select</strong>.</li>
+        <li>Select <strong>Review + assign</strong>.</li>
+      </ol>
+      <p>Role assignments can take a minute or two to take effect. If Step 3 fails on permissions, wait a moment and try again.</p>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <p>You should now have:</p>
+        <ul>
+          <li>A resource group <code>rg-call-qa-workshop</code> containing your Foundry resource.</li>
+          <li>A model deployment showing <strong>Succeeded</strong> under <strong>Models + endpoints</strong>.</li>
+          <li>Your project endpoint and deployment name saved somewhere you can paste from.</li>
+          <li>Your own account listed with <strong>Azure AI User</strong> on the Foundry resource's IAM page.</li>
+        </ul>
+      </div>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>I can't find gpt-4.1-mini in the catalog</summary>
+        <div>
+          <p>
+            Your region doesn't serve it. Either pick a different small chat model that <em>is</em>
+            offered, or create a second project in <em>East US 2</em> or <em>Sweden Central</em> and
+            use that one. If you create another project, use its endpoint in Step 2 &mdash; and put it
+            in the same resource group so Step 10 still catches it.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>"You do not have permission to create a role assignment"</summary>
+        <div>
+          <p>
+            You're a Contributor, not an Owner, on that scope. Contributors can create resources but
+            not grant access. Ask an administrator to assign you <strong>Azure AI User</strong> on
+            the Foundry resource, or run the workshop on a personal subscription where you're Owner.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>The deployment says it failed, or there's no quota</summary>
+        <div>
+          <p>
+            New subscriptions sometimes start with no quota for a given model in a given region.
+            Open <strong>Management centre</strong> &rarr; <strong>Quota</strong> in the Foundry
+            portal to see what you have. The fastest fix is to deploy in a different region or pick
+            a different model rather than waiting on a quota increase.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I lost the project endpoint</summary>
+        <div>
+          <p>
+            It's always on the project's <strong>Overview</strong> page in
+            <a href="https://ai.azure.com" target="_blank" rel="noopener">ai.azure.com</a>. You can
+            also rebuild it by hand:
+            <code>https://&lt;foundry-resource-name&gt;.services.ai.azure.com/api/projects/&lt;project-name&gt;</code>.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

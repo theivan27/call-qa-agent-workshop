@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Evaluate &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Run test cases against the agent, break a guardrail on purpose, and look at traces.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 9</p>
+      <h1>Evaluate</h1>
+      <p class="lede">
+        A demo that worked once isn't a product. The difference between the two is that you can
+        prove the second one still works after you change something.
+      </p>
+      <p class="meta">About 15 minutes &middot; The step people skip and later regret</p>
+
+      <h2>1. Why this isn't optional</h2>
+      <p>
+        You've changed the instructions, the knowledge and the tools today. Each change could have
+        quietly broken something that worked an hour ago, and you'd have no way of knowing &mdash;
+        agents fail softly. They don't crash, they just get a bit worse. Instead of re-reading output
+        and hoping, run the same checks every time.
+      </p>
+
+      <h2>2. Run the test cases</h2>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>python scripts/evaluate.py</code></pre>
+      <p>
+        Each case in <code>evals/test_cases.json</code> starts a fresh conversation, sends a prompt,
+        and checks two things: <strong>which tools were called</strong> and <strong>what the reply
+        contains</strong>. The cases assert that the agent:
+      </p>
+      <ul>
+        <li>Catches the missing disclosure and late verification in <code>C-5532</code></li>
+        <li>Catches the threats and the personal e-wallet in <code>C-5533</code></li>
+        <li>Suggests empathy coaching for <code>C-5535</code></li>
+        <li>Refuses to make HR decisions</li>
+        <li>Never shows a full card number</li>
+      </ul>
+      <p>Open the file. The cases are readable, and a QA manager could write new ones without help.</p>
+
+      <h2>3. Run it again</h2>
+      <p>
+        Seriously &mdash; run it two or three times. Model output varies between runs, so you may see a
+        case pass, then fail, then pass.
+      </p>
+      <div class="note">
+        <span class="note-title">A flaky case is information</span>
+        <p>
+          The instinct is to treat it as noise. Don't. A case that passes four times in five is
+          telling you the instructions are ambiguous at that point, and that one in five of your real
+          reviews will be wrong in the same way. Tighten the wording in
+          <code>instructions.md</code>, recreate the agent, and run again. That loop &mdash; change,
+          measure, repeat &mdash; is the actual craft of building agents.
+        </p>
+      </div>
+
+      <h2>4. Break a guardrail on purpose</h2>
+      <p>This is the exercise that makes the point stick.</p>
+      <ol>
+        <li>Open <code>api/qa_agent/instructions.md</code> and delete the whole <strong>Boundaries</strong> section.</li>
+        <li>Recreate the agent:</li>
+      </ol>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>python scripts/create_agent.py --stage 3</code></pre>
+      <ol start="3">
+        <li>Run <code>python scripts/evaluate.py</code> again.</li>
+      </ol>
+      <p>
+        The HR refusal case should now fail. The card-masking case should still pass &mdash; because that
+        one is enforced in Python by <code>_mask()</code>, not by instructions. One guardrail
+        evaporated when you edited a markdown file; the other didn't notice.
+      </p>
+      <p>Put the section back, recreate the agent, and confirm the suite goes green again.</p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>git checkout api/qa_agent/instructions.md
+python scripts/create_agent.py --stage 3
+python scripts/evaluate.py</code></pre>
+      <div class="warn">
+        <span class="note-title">Careful with that command</span>
+        <p>
+          <code>git checkout</code> on a file throws away <em>all</em> your uncommitted changes to it,
+          not just the deletion. If you've been editing the instructions and want to keep that work,
+          undo the deletion by hand instead.
+        </p>
+      </div>
+
+      <h2>5. Look at the traces</h2>
+      <p>Tests tell you whether it worked. Traces tell you what it did.</p>
+      <ol>
+        <li>In <a href="https://ai.azure.com" target="_blank" rel="noopener">ai.azure.com</a>, open your project and find your agent.</li>
+        <li>Open its <strong>traces</strong> or monitoring view.</li>
+        <li>Open a single run and expand it.</li>
+      </ol>
+      <p>
+        You get each step in order, with the tool calls, how long each took, and the tokens used.
+        Tokens are your bill, so this view is also your cost model &mdash; it's where you discover that
+        one review of one call costs a fraction of a cent, and that reviewing fifty calls in one
+        request is where your latency goes.
+      </p>
+      <p>
+        Full tracing needs an <strong>Application Insights</strong> resource connected to your
+        project. If the view is empty, that's why. Skip it today rather than creating another billable
+        resource you'll need to delete.
+      </p>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <ul>
+          <li><code>evaluate.py</code> runs and reports pass/fail per case.</li>
+          <li>You've seen the suite go red when you removed the boundaries, and green when you restored them.</li>
+          <li>You understand which guardrails live in instructions and which live in code.</li>
+        </ul>
+      </div>
+
+      <h2>Worth discussing</h2>
+      <p>If you're here with colleagues, these are the questions that matter back at the office:</p>
+      <ul>
+        <li>
+          <strong>What would you measure in production?</strong> Agreement with human QA scores on a
+          sampled set; compliance breaches caught versus missed; time from call to feedback; cost per
+          review. Agreement with humans is the one that earns trust.
+        </li>
+        <li>
+          <strong>Which actions should always need a person?</strong> You have a defensible answer
+          from today: anything affecting someone's employment. Where exactly is your line?
+        </li>
+        <li>
+          <strong>What happens when the agent is wrong?</strong> Who notices, how do they appeal, and
+          what gets fixed? An agent with no correction path will be distrusted into disuse,
+          regardless of accuracy.
+        </li>
+        <li>
+          <strong>Who owns the knowledge files?</strong> The most valuable thing you built today is
+          the separation between policy and code. It only holds if a person is responsible for
+          keeping those documents current.
+        </li>
+      </ul>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>Every case fails</summary>
+        <div>
+          <p>
+            Something environmental, not behavioural. Run
+            <code>python scripts/check_setup.py</code>, then confirm the agent is at stage 3 with
+            <code>python scripts/create_agent.py --stage 3</code>.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>It's slow, or I hit rate limits</summary>
+        <div>
+          <p>
+            Each case is a full conversation with several model calls, so the suite takes a few
+            minutes. If you see 429 errors you're hitting your deployment's tokens-per-minute quota &mdash;
+            wait a moment and re-run. You can raise the quota under <strong>Models +
+            endpoints</strong> if your subscription allows it.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>A case fails and I think the agent is actually right</summary>
+        <div>
+          <p>
+            Then the test is wrong, and that's a legitimate finding. These cases check for specific
+            words, which is crude &mdash; a correct answer phrased differently will fail. Fix the
+            expectation in <code>evals/test_cases.json</code>. Knowing whether to fix the agent or the
+            test is a judgement call you'll make constantly.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Open your Codespace &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Fork the workshop repository, open it in GitHub Codespaces and sign in to Azure.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="guide-top">
+    <a class="home" href="index.html">
+      <strong>Call QA Agent Workshop</strong>
+      <span>Building Agents with AI Foundry &middot; Infoseer Consulting</span>
+    </a>
+    <div class="spacer"></div>
+    <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
+    <a class="applink" href="../index.html">Open the app &rarr;</a>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 2</p>
+      <h1>Open your Codespace</h1>
+      <p class="lede">
+        Take your own copy of the workshop code and open it in a dev environment that runs in your
+        browser, with Python, the Azure CLI and everything else already installed.
+      </p>
+      <p class="meta">About 10 minutes &middot; Most of it is waiting for the container to build</p>
+
+      <h2>1. Fork the repository</h2>
+      <p>
+        A <strong>fork</strong> is your own copy of the code under your GitHub account. You need one
+        of your own, because in Step 7 Azure will deploy from it &mdash; and you can't grant Azure
+        write access to someone else's repository.
+      </p>
+      <ol>
+        <li>Open <a data-repo-url="fork" href="https://github.com" target="_blank" rel="noopener">the fork page for <span data-repo></span></a>.</li>
+        <li>Leave the repository name as it is. Keep <strong>Copy the main branch only</strong> ticked.</li>
+        <li>Select <strong>Create fork</strong>.</li>
+      </ol>
+      <p>You'll land on your own copy, at <code>github.com/&lt;your-username&gt;/call-qa-agent-workshop</code>.</p>
+
+      <h2>2. Start the Codespace</h2>
+      <ol>
+        <li>On <strong>your fork</strong>, select the green <strong>Code</strong> button.</li>
+        <li>Open the <strong>Codespaces</strong> tab.</li>
+        <li>Select <strong>Create codespace on main</strong>.</li>
+      </ol>
+      <p>
+        A browser version of VS Code opens and starts building your environment. The first build
+        takes <strong>three to five minutes</strong> &mdash; it's installing Python packages, the Azure
+        CLI, the Static Web Apps CLI and the Azure Functions tools. You'll see a terminal log
+        scrolling. Let it finish.
+      </p>
+      <div class="note">
+        <span class="note-title">Check you're on your own fork</span>
+        <p>
+          Easy to get wrong when you have both tabs open. The Codespace must be created from
+          <code>github.com/&lt;your-username&gt;/…</code>, not from the original repository.
+        </p>
+      </div>
+      <p>When it's done, the terminal prints a short welcome message listing what to do next.</p>
+
+      <h2>3. Fill in your settings</h2>
+      <p>
+        The setup created a file called <code>.env</code> from a template. It's where your two
+        values from Step 1 go.
+      </p>
+      <ol>
+        <li>In the file explorer on the left, open <code>.env</code>.</li>
+        <li>Replace the placeholder values:</li>
+      </ol>
+      <pre><code>FOUNDRY_PROJECT_ENDPOINT=https://fdy-callqa-ab1234.services.ai.azure.com/api/projects/call-qa-project
+MODEL_DEPLOYMENT_NAME=gpt-4.1-mini
+FOUNDRY_AGENT_NAME=call-qa-reviewer</code></pre>
+      <ol start="3">
+        <li>
+          Use <em>your own</em> endpoint and deployment name. Leave
+          <code>FOUNDRY_AGENT_NAME</code> alone.
+        </li>
+        <li>Save with <strong>Ctrl+S</strong> (<strong>Cmd+S</strong> on a Mac).</li>
+      </ol>
+      <p>
+        No quotes around the values, and no spaces around the <code>=</code>. Now do the same for
+        the API's copy of the setting &mdash; open <code>api/local.settings.json</code> and put the same
+        endpoint in <code>FOUNDRY_PROJECT_ENDPOINT</code> there.
+      </p>
+      <div class="note">
+        <span class="note-title">Why two files?</span>
+        <p>
+          <code>.env</code> is read by the scripts you'll run in Steps 3 to 5.
+          <code>api/local.settings.json</code> is read by the web app's API in Step 6. Both are
+          listed in <code>.gitignore</code>, so neither is ever committed &mdash; which is exactly what
+          you want from a file holding your own endpoints.
+        </p>
+      </div>
+
+      <h2>4. Sign in to Azure</h2>
+      <p>
+        Your code authenticates as <em>you</em>, using the Azure CLI's sign-in. There are no API
+        keys anywhere in this workshop.
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az login --use-device-code</code></pre>
+      <p>
+        The <code>--use-device-code</code> part matters: a Codespace can't open a browser for you,
+        so the CLI prints a code and a URL instead.
+      </p>
+      <ol>
+        <li>Copy the code from the terminal.</li>
+        <li>Open the URL it gives you in a new tab and paste the code.</li>
+        <li>Sign in with the <strong>same account</strong> you used in Step 1.</li>
+        <li>Come back to the terminal. It prints your subscriptions as JSON.</li>
+      </ol>
+      <p>If you have more than one subscription, make sure the right one is active:</p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az account show --output table</code></pre>
+      <p>If it's the wrong one:</p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az account set --subscription "Name of the right subscription"</code></pre>
+
+      <h2>5. Confirm the environment works</h2>
+      <p>One command checks your settings, your sign-in and your permissions together.</p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>python scripts/check_setup.py</code></pre>
+      <p>Every line should come back with a tick. If any line fails, it tells you which step to go back to.</p>
+
+      <div class="check">
+        <span class="note-title">Checkpoint</span>
+        <ul>
+          <li>You're looking at VS Code in your browser, on a repository under your own username.</li>
+          <li><code>.env</code> and <code>api/local.settings.json</code> both hold your project endpoint.</li>
+          <li><code>az account show</code> prints the subscription from Step 1.</li>
+          <li><code>python scripts/check_setup.py</code> passes.</li>
+        </ul>
+      </div>
+
+      <h2>Finding your way around</h2>
+      <table class="fields">
+        <tbody>
+          <tr><td><code>knowledge/</code></td><td>The scorecard, compliance checklist and coaching guide &mdash; Step 4.</td></tr>
+          <tr><td><code>api/qa_agent/</code></td><td>The agent's instructions, tools and run loop. The interesting code.</td></tr>
+          <tr><td><code>scripts/</code></td><td>The commands you'll run: create the agent, chat with it, evaluate it.</td></tr>
+          <tr><td><code>src/</code></td><td>The web app front end &mdash; and this guide, in <code>src/guide/</code>.</td></tr>
+          <tr><td><code>evals/</code></td><td>Test cases for Step 9.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>If something went wrong</h2>
+
+      <details class="trouble">
+        <summary>The Codespace build failed, or packages are missing</summary>
+        <div>
+          <p>Re-run the setup from the terminal:</p>
+          <pre><code>bash .devcontainer/post-create.sh</code></pre>
+          <p>
+            If that doesn't fix it, rebuild the container: open the command palette with
+            <strong>Ctrl+Shift+P</strong>, then run <strong>Codespaces: Rebuild Container</strong>.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>"az: command not found"</summary>
+        <div>
+          <p>
+            The container finished before the setup script did, or the build failed partway. Rebuild
+            it: <strong>Ctrl+Shift+P</strong> &rarr; <strong>Codespaces: Rebuild Container</strong>.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>check_setup.py says my endpoint is wrong</summary>
+        <div>
+          <p>
+            It must contain <code>/api/projects/</code>. Go back to your project's
+            <strong>Overview</strong> in <a href="https://ai.azure.com" target="_blank" rel="noopener">ai.azure.com</a>
+            and copy it with the copy button. Watch for a trailing space or a stray quote mark in
+            <code>.env</code>.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>check_setup.py says permission denied, or 401</summary>
+        <div>
+          <p>
+            Two usual causes. Either the <strong>Azure AI User</strong> role assignment from
+            <a href="01-foundry-project.html">Step 1, section 6</a> is missing &mdash; check the IAM
+            page on your Foundry resource &mdash; or you signed in to the CLI with a different account
+            than the one you granted the role to. Compare the email in
+            <code>az account show</code> against the one on the IAM page.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I closed the tab. Did I lose everything?</summary>
+        <div>
+          <p>
+            No. Go to <a href="https://github.com/codespaces" target="_blank" rel="noopener">github.com/codespaces</a>
+            and reopen it. Your files, your <code>.env</code> and your Azure sign-in are all still
+            there. Codespaces stop themselves after a while idle and resume where you left off.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
