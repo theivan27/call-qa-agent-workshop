@@ -14,11 +14,15 @@
 
   "postCreateCommand": "bash .devcontainer/post-create.sh",
 
-  "forwardPorts": [4280, 7071],
+  "forwardPorts": [4280, 4281, 7071],
   "portsAttributes": {
     "4280": {
       "label": "Call QA Reviewer web app",
       "onAutoForward": "notify"
+    },
+    "4281": {
+      "label": "Workshop guide",
+      "onAutoForward": "silent"
     },
     "7071": {
       "label": "Functions API (used via 4280)",

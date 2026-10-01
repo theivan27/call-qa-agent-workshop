@@ -56,8 +56,7 @@ Next, follow the workshop guide. Three things to do:
        python scripts/check_setup.py
 
 To read the guide in here, run:
-       swa start src --api-location api
-and open /guide/ on the forwarded port 4280.
+       swa start guide --port 4281
 =====================================
 
 MESSAGE

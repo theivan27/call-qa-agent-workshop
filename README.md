@@ -33,36 +33,52 @@ across client programs). All data is fictional: Northwind Bank and Contoso BPO a
 
 ## Start here: the workshop guide
 
-The step-by-step instructions live in a static site in [`src/guide/`](src/guide/), written for
-attendees with no prior Azure experience. It deploys with the app, so the live site serves the app
-at `/` and the guide at `/guide`.
+The step-by-step instructions live in a static site in [`guide/`](guide/), written for attendees
+with no prior Azure experience. It is **deployed as its own Static Web App**, separate from the
+workshop app in `src/` — attendees need to read Step 0 before they have an Azure subscription, so
+the guide cannot live inside the app they haven't deployed yet.
 
-To read it, open `/guide/` on the deployed site, or run `swa start src --api-location api` and open
-`/guide/` on port 4280. The files in [`labs/`](labs/) are now pointers into it.
+To read it locally:
+
+```bash
+swa start guide --port 4281        # then open http://localhost:4281
+```
+
+You can also open [`guide/index.html`](guide/index.html) straight in a browser. The files in
+[`labs/`](labs/) are pointers into the guide, which is now the single source.
 
 | Step | What you do | Time |
 |------|-------------|------|
-| [0. Prerequisites](src/guide/00-prerequisites.html) | Azure subscription, GitHub account, costs | 20 min |
-| [1. Create the project](src/guide/01-foundry-project.html) | Resource group, Foundry project, model deployment | 15 min |
-| [2. Open your Codespace](src/guide/02-codespace.html) | Fork, configure `.env`, sign in to Azure | 10 min |
-| [3. Your first agent](src/guide/03-first-agent.html) | A prompt agent with instructions only | 10 min |
-| [4. Add knowledge](src/guide/04-knowledge.html) | Ground it in the scorecard and checklist | 15 min |
-| [5. Add tools](src/guide/05-tools.html) | Let it read calls and save results | 20 min |
-| [6. Run the web app](src/guide/06-run-app.html) | The front end and API in your Codespace | 15 min |
-| [7. Deploy from the portal](src/guide/07-deploy-portal.html) | Create a Static Web App from your fork | 20 min |
-| [8. Make the live app work](src/guide/08-configure-app.html) | Identity, app settings, sign-in | 20 min |
-| [9. Evaluate](src/guide/09-evaluate.html) | Test cases, guardrails and traces | 15 min |
-| [10. Delete everything](src/guide/10-clean-up.html) | Clean-up, so nothing keeps billing you | 10 min |
+| [0. Prerequisites](guide/00-prerequisites.html) | Azure subscription, GitHub account, costs | 20 min |
+| [1. Create the project](guide/01-foundry-project.html) | Resource group, Foundry project, model deployment | 15 min |
+| [2. Open your Codespace](guide/02-codespace.html) | Fork, configure `.env`, sign in to Azure | 10 min |
+| [3. Your first agent](guide/03-first-agent.html) | A prompt agent with instructions only | 10 min |
+| [4. Add knowledge](guide/04-knowledge.html) | Ground it in the scorecard and checklist | 15 min |
+| [5. Add tools](guide/05-tools.html) | Let it read calls and save results | 20 min |
+| [6. Run the web app](guide/06-run-app.html) | The front end and API in your Codespace | 15 min |
+| [7. Deploy from the portal](guide/07-deploy-portal.html) | Create a Static Web App from your fork | 20 min |
+| [8. Make the live app work](guide/08-configure-app.html) | Identity, app settings, sign-in | 20 min |
+| [9. Evaluate](guide/09-evaluate.html) | Test cases, guardrails and traces | 15 min |
+| [10. Delete everything](guide/10-clean-up.html) | Clean-up, so nothing keeps billing you | 10 min |
 | [Optional: AI call recordings](labs/optional-audio.md) | Generate audio of the sample calls with Azure AI Speech | 10 min |
 
 ### Running the workshop yourself
 
-Two things to change when you host this for your own attendees:
+Two sites come out of this repo, deployed independently:
 
-1. Set `REPO` at the top of [`src/guide/steps.js`](src/guide/steps.js) to your own
-   `owner/repo` slug. Every fork link, Codespaces link and clone command in the guide follows it.
-2. Deploy this repo once (guide Step 7) and give attendees the resulting `/guide` URL, so they can
-   read the instructions before they have an Azure subscription of their own.
+| Site | Source | Deployed by | Who deploys it |
+|---|---|---|---|
+| The guide | `guide/` | [`deploy-guide.yml`](.github/workflows/deploy-guide.yml) on push to `main` | You, once. Attendees just read it. |
+| The app | `src/` + `api/` | The workflow Azure writes when you connect the repo in the portal | Each attendee, in guide Step 7 |
+
+To host it for your own attendees:
+
+1. Set `REPO` at the top of [`guide/steps.js`](guide/steps.js) to your `owner/repo` slug. Every
+   fork link, Codespaces link and clone command in the guide follows it.
+2. Create a Static Web App on the **Free** plan for the guide, with **Other** as the deployment
+   source, and put its deployment token in a repository secret named
+   `AZURE_STATIC_WEB_APPS_API_TOKEN_GUIDE`.
+3. Push to `main`. The guide workflow publishes `guide/` to that app. Give attendees the URL.
 
 ## In GitHub Codespaces
 
@@ -105,10 +121,10 @@ api/                 Azure Functions (Python) used as the web app's API
 knowledge/           Documents the agent searches (scorecard, checklist, coaching guide)
 scripts/             check_setup.py, create_agent.py, chat_cli.py, evaluate.py
 evals/               Test cases for evaluate.py
-src/                 Static front end (HTML, CSS, JavaScript) and staticwebapp.config.json
-  guide/             The attendee workshop guide, served at /guide
-labs/                Pointers into src/guide/ (the instructions used to live here)
-.github/workflows/   Manual fallback deploy; Azure writes the real one when you deploy (Step 7)
+src/                 The app: static front end and staticwebapp.config.json
+guide/               The attendee guide. Its own Static Web App, deployed separately
+labs/                Pointers into guide/ (the instructions used to live here)
+.github/workflows/   deploy-guide.yml publishes guide/; the app's workflow is written by Azure
 ```
 
 ## Costs and clean-up

@@ -16,7 +16,7 @@
     </a>
     <div class="spacer"></div>
     <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
-    <a class="applink" href="../index.html">Open the app &rarr;</a>
+    <a class="applink" data-repo-url="repo" href="https://github.com/">Get the code &rarr;</a>
   </header>
 
   <div class="guide-shell">
@@ -39,7 +39,7 @@
       <ul>
         <li>
           <strong><code>src/</code></strong> &mdash; the front end. Plain HTML, CSS and JavaScript, no
-          framework. (This guide is in there too, at <code>src/guide/</code>.)
+          framework.
         </li>
         <li>
           <strong><code>api/</code></strong> &mdash; two Azure Functions. <code>GET /api/calls</code>
@@ -121,7 +121,7 @@
           <li>The app loads in your browser and the calls list is populated.</li>
           <li>Sending a request produces a scored review.</li>
           <li><strong>What the agent did</strong> lists tool calls with arguments and results.</li>
-          <li>Visiting <code>/guide/</code> on the same URL shows this guide.</li>
+          <li>Tool calls show the arguments your code received and what it returned.</li>
         </ul>
       </div>
 

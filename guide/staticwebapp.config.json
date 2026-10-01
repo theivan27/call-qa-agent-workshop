@@ -1,0 +1,15 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["*.{css,js,svg,png,ico}"]
+  },
+  "globalHeaders": {
+    "cache-control": "public, max-age=300, must-revalidate"
+  },
+  "mimeTypes": {
+    ".html": "text/html",
+    ".css": "text/css",
+    ".js": "text/javascript",
+    ".json": "application/json"
+  }
+}

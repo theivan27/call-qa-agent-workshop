@@ -16,7 +16,7 @@
     </a>
     <div class="spacer"></div>
     <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Steps</button>
-    <a class="applink" href="../index.html">Open the app &rarr;</a>
+    <a class="applink" data-repo-url="repo" href="https://github.com/">Get the code &rarr;</a>
   </header>
 
   <div class="guide-shell">
@@ -156,7 +156,6 @@
       <pre><code>{
   "platform": { "apiRuntime": "python:3.10" },
   "routes": [
-    { "route": "/guide/*", "allowedRoles": ["anonymous"] },
     { "route": "/*", "allowedRoles": ["authenticated"] }
   ],
   "responseOverrides": {
@@ -164,7 +163,7 @@
   },
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/api/*", "/guide/*", "*.{css,js,svg,png,ico,mp3}"]
+    "exclude": ["/api/*", "*.{css,js,svg,png,ico,mp3}"]
   }
 }</code></pre>
       <p>Then push it:</p>
@@ -174,8 +173,8 @@ git commit -m "Require sign-in"
 git push</code></pre>
       <p>
         Wait for Actions to go green, then open your site in a private browsing window. You're sent
-        to Microsoft Entra ID to sign in before you see anything. The guide stays public, so you can
-        still share these instructions.
+        to Microsoft Entra ID to sign in before you see anything. This guide is a separate site, so
+        it's unaffected &mdash; you can keep reading.
       </p>
       <div class="note">
         <span class="note-title">Authenticated is not the same as authorised</span>
@@ -192,7 +191,6 @@ git push</code></pre>
           <li>Your live site loads the calls list and reviews a call successfully.</li>
           <li>Five environment variables are saved on the Production environment.</li>
           <li>After the config push, a private window asks you to sign in.</li>
-          <li><code>/guide/</code> still opens without signing in.</li>
         </ul>
       </div>
 
