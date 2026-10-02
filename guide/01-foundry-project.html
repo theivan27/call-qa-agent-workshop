@@ -211,6 +211,16 @@
         <img src="media/05-role-assignment.png" alt="The Add role assignment page with Foundry User selected in the role list" loading="lazy">
         <figcaption><strong>Foundry User</strong> on the Foundry resource. Being Owner is not enough.</figcaption>
       </figure>
+      <p>
+        Now add a second role the same way. The agent transcribes the call recordings with Azure
+        AI Speech, which lives on the same resource but behind its own permission:
+      </p>
+      <ol>
+        <li>Stay on <strong>Access control (IAM)</strong> for the Foundry resource.</li>
+        <li>Select <strong>+ Add</strong> &rarr; <strong>Add role assignment</strong> again.</li>
+        <li>Search for <strong>Cognitive Services Speech User</strong> and select it.</li>
+        <li>Assign it to your own account, exactly as you just did.</li>
+      </ol>
       <p>Role assignments can take a minute or two to take effect. If Step 3 fails on permissions, wait a moment and try again.</p>
 
       <div class="check">

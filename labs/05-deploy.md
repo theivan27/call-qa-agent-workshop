@@ -9,7 +9,7 @@
 
 ## Where this lab went
 
-- [Deploy from the portal](../guide/07-deploy-portal.html) — Create a Static Web App from your fork
+- [Deploy from your Codespace](../guide/07-deploy-codespace.html) — Publish the site and API with the SWA CLI
 - [Make the live app work](../guide/08-configure-app.html) — Identity, app settings, sign-in
 
 ## Reading the guide

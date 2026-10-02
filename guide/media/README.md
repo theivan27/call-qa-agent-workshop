@@ -71,21 +71,22 @@ The guide is a public site. Assume every screenshot will be read closely by some
 | File | P | What to capture |
 |---|---|---|
 | `12-port-forward.png` | **P1** | The Codespaces notification for port 4280 with **Open in Browser**, or the **Ports** tab with the globe icon boxed. People get stuck here with the app running and no idea how to see it. |
-| `13-app-running.png` | P2 | The app after one review, with **What the agent did** populated on the right. Good "this is what success looks like" shot. |
+| `13-app-running.png` | P2 | The app after one review, with **What the agent did** populated on the right — include a visible `transcribe_call` entry and an audio player under a call in the list. Good "this is what success looks like" shot. |
 
-### Step 7 — Deploy from the portal
+### Step 7 — Deploy from your Codespace
 
 | File | P | What to capture |
 |---|---|---|
-| `14-swa-github-source.png` | **P1** | **Deployment details** with Source = GitHub and your org/repo/branch selected. |
-| `15-swa-build-details.png` | **P1** | **Build Details** with `/src`, `/api`, and **Output location empty**. Box the empty Output location field. This is the most common deployment failure in the whole workshop. |
-| `16-actions-green.png` | P2 | The fork's **Actions** tab with a green run. |
+| `14-swa-deploy-output.png` | **P1** | The terminal after `swa deploy` finishes, with the live site URL on screen. Box the URL. **Check no part of the deployment token is visible** — scroll so the token command is off screen before you capture. |
+
+Step 7 used to walk through the portal wizard, so shots 15 (Build Details) and 16 (Actions run)
+no longer have a slot. Don't capture them.
 
 ### Step 8 — Make the live app work
 
 | File | P | What to capture |
 |---|---|---|
-| `17-swa-env-vars.png` | **P1** | **Settings → Environment variables** on the Static Web App, showing the five names on the **Production** tab. Values must be placeholders or hidden — this screen holds a client secret. |
+| `17-swa-env-vars.png` | P2 | **Settings → Environment variables** on the Static Web App, showing the five names on the **Production** tab. Values must be placeholders or hidden — this screen holds a client secret. |
 
 ### Step 10 — Delete everything
 

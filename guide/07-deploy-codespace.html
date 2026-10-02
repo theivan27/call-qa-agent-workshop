@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deploy from your Codespace &middot; Call QA Agent Workshop</title>
+  <meta name="description" content="Create an Azure Static Web App and deploy the front end, the API and the call recordings straight from your Codespace terminal.">
+  <link rel="stylesheet" href="guide.css">
+  <script src="steps.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-org">Infoseer</span>
+        <span class="brand-product">Learn</span>
+      </a>
+      <span class="brand-divider" aria-hidden="true"></span>
+      <p class="brand-module">Building Agents with AI Foundry</p>
+      <div class="header-spacer"></div>
+      <button type="button" class="nav-toggle" data-nav-toggle aria-expanded="false">Contents</button>
+      <a class="header-cta" data-repo-url="repo" href="https://github.com/">Get the code</a>
+    </div>
+  </header>
+
+  <div class="guide-shell">
+    <aside class="guide-sidebar" data-guide-sidebar aria-label="Workshop steps">
+      <div data-guide-progress></div>
+      <nav data-guide-nav></nav>
+    </aside>
+
+    <main class="guide-main">
+      <p class="eyebrow">Step 7</p>
+      <h1>Deploy from your Codespace</h1>
+      <p class="lede">
+        Your Codespace already has the Static Web Apps CLI. Create the app with one command,
+        publish with another, and watch your own machine upload the site &mdash; no portal
+        wizard, no deployment pipeline to debug.
+      </p>
+      <p class="meta">About 15 minutes &middot; Two commands and a short wait</p>
+
+      <h2>1. What actually gets deployed</h2>
+      <p>
+        A Static Web App is two halves that ship together, and it helps to know which is which
+        before you watch them upload:
+      </p>
+      <table class="fields">
+        <tbody>
+          <tr><td><code>src/</code></td><td>The front end. Plain HTML, CSS and JavaScript &mdash; plus <code>src/audio/</code>, the five call recordings.</td></tr>
+          <tr><td><code>api/</code></td><td>The Python functions behind <code>/api/*</code>. Azure runs these for you; you don't manage a server.</td></tr>
+        </tbody>
+      </table>
+      <p>
+        The recordings are about 5&nbsp;MB in total, so the first upload takes a few seconds
+        longer than you might expect. That's normal.
+      </p>
+      <div class="note">
+        <span class="note-title">You don't have to push first</span>
+        <p>
+          This deploys what's in your Codespace right now, not what's on GitHub. That's handy
+          while you're iterating, but it also means your fork and your live site can drift apart.
+          Commit and push when you're happy &mdash; <code>.env</code> and
+          <code>api/local.settings.json</code> are both in <code>.gitignore</code>, so
+          <code>git add .</code> won't leak your endpoint.
+        </p>
+      </div>
+
+      <h2>2. Create the Static Web App</h2>
+      <p>
+        One command. It creates an empty app with nothing deployed to it yet, which is exactly
+        what we want &mdash; we'll fill it in the next step.
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>az staticwebapp create \
+  --name swa-call-qa-ab1234 \
+  --resource-group rg-call-qa-workshop \
+  --location eastasia \
+  --sku Free</code></pre>
+      <p>
+        Use your own suffix in the name, the same way you did for the Foundry resource in Step 1.
+        The name becomes part of your public URL, so it has to be unique.
+      </p>
+      <div class="warn">
+        <span class="note-title">The Free plan runs in only a few regions</span>
+        <p>
+          <code>eastasia</code>, <code>westus2</code>, <code>centralus</code>,
+          <code>eastus2</code> and <code>westeurope</code>. Pick the nearest one. This is
+          independent of where your Foundry resource lives &mdash; they don't have to match, and
+          a few hundred milliseconds between them makes no difference to a workshop.
+        </p>
+      </div>
+
+      <h2>3. Get the deployment token</h2>
+      <p>
+        The token is what lets the CLI publish to <em>your</em> app. Read it into a shell
+        variable rather than pasting it around &mdash; it's a credential, and anyone holding it
+        can overwrite your site.
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>SWA_TOKEN=$(az staticwebapp secrets list \
+  --name swa-call-qa-ab1234 \
+  --resource-group rg-call-qa-workshop \
+  --query "properties.apiKey" --output tsv)
+
+echo "${#SWA_TOKEN} characters"   # a number means it worked; 0 means it didn't</code></pre>
+      <p>
+        Printing the length rather than the token keeps it off your screen, which matters if
+        you're sharing it in a room or recording the session.
+      </p>
+
+      <h2>4. Deploy</h2>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>swa deploy ./src \
+  --api-location ./api \
+  --deployment-token "$SWA_TOKEN" \
+  --env production</code></pre>
+      <p>
+        The CLI zips both folders, uploads them, and prints the live URL when it finishes. The
+        first run takes two or three minutes, because Azure installs your Python dependencies
+        &mdash; including <code>requests</code>, which the transcription tool needs.
+      </p>
+      <figure class="shot" data-shot="14-swa-deploy-output">
+        <img src="media/14-swa-deploy-output.png" alt="The Codespace terminal after swa deploy finishes, showing the live site URL" loading="lazy">
+        <figcaption>The URL at the end is your site. Azure gives you a generated hostname.</figcaption>
+      </figure>
+
+      <h2>5. Open your site</h2>
+      <p>
+        Open the URL the CLI printed. You should see the call list, with a player under each
+        call &mdash; those are the recordings, served from <code>src/audio/</code>.
+      </p>
+      <p>
+        <strong>The agent won't answer yet.</strong> Ask it to review a call and you'll get an
+        error. That's expected: the deployed API has no identity and no settings, which is
+        exactly what Step 8 fixes. Seeing it fail here is useful &mdash; it makes the point that
+        running code and <em>authorised</em> running code are different things.
+      </p>
+
+      <h2>6. Deploying again after a change</h2>
+      <p>
+        Every later deployment is the same single command. The token is already in your shell
+        variable, so as long as you haven't restarted the terminal:
+      </p>
+      <p class="where">In the Codespace terminal</p>
+      <pre><code>swa deploy ./src --api-location ./api --deployment-token "$SWA_TOKEN" --env production</code></pre>
+      <p>
+        If you closed the terminal, re-run the command from Step 3 to put the token back.
+      </p>
+
+      <details class="trouble">
+        <summary>Why not deploy from GitHub Actions?</summary>
+        <div>
+          <p>
+            You can, and in real projects you usually should &mdash; a push to <code>main</code>
+            publishes itself, with no laptop in the loop. We're doing it by hand here for two
+            reasons. It's one command instead of a portal wizard and a generated workflow file,
+            and when something breaks you read the error in your own terminal rather than
+            hunting through a build log.
+          </p>
+          <p>
+            The repository still ships
+            <code>.github/workflows/azure-static-web-apps.yml</code> for when you want the
+            automatic route. It's set to <code>workflow_dispatch:</code>, so it only runs when
+            you ask it to. To make it automatic, add a <code>push:</code> trigger and put the
+            deployment token in a repository secret called
+            <code>AZURE_STATIC_WEB_APPS_API_TOKEN</code>.
+          </p>
+        </div>
+      </details>
+
+      <div class="check">
+        <span class="note-title">Before you move on</span>
+        <ul>
+          <li>A Static Web App in <code>rg-call-qa-workshop</code> with a URL that loads.</li>
+          <li>The call list showing five calls, each with a working audio player.</li>
+          <li>The agent returning an error when asked to review &mdash; Step 8 fixes that.</li>
+        </ul>
+      </div>
+
+      <details class="trouble">
+        <summary>az staticwebapp create says the name is taken</summary>
+        <div>
+          <p>
+            The name is part of a public hostname, so it's global. Change your suffix &mdash;
+            <code>swa-call-qa-</code> plus something nobody else would pick &mdash; and run it
+            again.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>swa: command not found</summary>
+        <div>
+          <p>
+            The Codespace installs the CLI in <code>.devcontainer/post-create.sh</code>. If the
+            Codespace was still building when you opened the terminal, that may not have
+            finished. Wait for the build to complete, then open a new terminal. To install it
+            yourself: <code>npm install --global @azure/static-web-apps-cli</code>.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>The deployment token is empty</summary>
+        <div>
+          <p>
+            Usually the app name or resource group is misspelled, so the command found nothing
+            and returned an empty string. Run
+            <code>az staticwebapp list --output table</code> and copy the name exactly. If
+            you're signed in to more than one subscription, check
+            <code>az account show --output table</code> is the one you created the app in.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>I get a 404 at the site URL</summary>
+        <div>
+          <p>
+            Check you deployed <code>./src</code> and not the repository root. The folder you
+            pass to <code>swa deploy</code> has to be the one containing
+            <code>index.html</code>. Deploying the wrong folder publishes a site with nothing in
+            it, which Azure serves as a 404.
+          </p>
+        </div>
+      </details>
+
+      <details class="trouble">
+        <summary>The players don't appear on the deployed site</summary>
+        <div>
+          <p>
+            The recordings live in <code>src/audio/</code>. Confirm they're there with
+            <code>ls src/audio</code> &mdash; you should see five <code>.mp3</code> files. If
+            the folder is empty, the deployment uploaded a site without them, and the app hides
+            a player it can't find rather than showing a broken control.
+          </p>
+        </div>
+      </details>
+
+      <footer class="guide-foot">
+        <div data-guide-done></div>
+        <div data-guide-pager></div>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

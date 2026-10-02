@@ -26,8 +26,9 @@ across client programs). All data is fictional: Northwind Bank and Contoso BPO a
 
 - **Knowledge** (`knowledge/`): QA scorecard, compliance checklist (CC-01 to CC-07) and coaching
   guide, uploaded to a vector store and searched with the file search tool.
-- **Tools** (`api/qa_agent/tools.py`): `list_calls`, `get_transcript`, `log_qa_score`,
-  `flag_compliance_issue`, `create_coaching_task`. They run in your code, not in Foundry.
+- **Tools** (`api/qa_agent/tools.py`): `list_calls`, `transcribe_call`, `get_transcript`,
+  `log_qa_score`, `flag_compliance_issue`, `create_coaching_task`. They run in your code, not in
+  Foundry. `transcribe_call` sends the recording to Azure AI Speech fast transcription.
 - **Guardrails**: the instructions keep HR decisions with people; the code masks card and account
   numbers before the model sees them and validates every score.
 
@@ -56,7 +57,7 @@ You can also open [`guide/index.html`](guide/index.html) straight in a browser. 
 | [4. Add knowledge](guide/04-knowledge.html) | Ground it in the scorecard and checklist | 15 min |
 | [5. Add tools](guide/05-tools.html) | Let it read calls and save results | 20 min |
 | [6. Run the web app](guide/06-run-app.html) | The front end and API in your Codespace | 15 min |
-| [7. Deploy from the portal](guide/07-deploy-portal.html) | Create a Static Web App from your fork | 20 min |
+| [7. Deploy from your Codespace](guide/07-deploy-codespace.html) | Publish the site and API with the SWA CLI | 15 min |
 | [8. Make the live app work](guide/08-configure-app.html) | Identity, app settings, sign-in | 20 min |
 | [9. Evaluate](guide/09-evaluate.html) | Test cases, guardrails and traces | 15 min |
 | [10. Delete everything](guide/10-clean-up.html) | Clean-up, so nothing keeps billing you | 10 min |

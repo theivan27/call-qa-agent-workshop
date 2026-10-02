@@ -9,6 +9,8 @@ import json
 import re
 from pathlib import Path
 
+from . import speech
+
 DATA_FILE = Path(__file__).parent / "data" / "calls.json"
 
 SCORE_MAX = {"opening": 15, "verification": 20, "empathy": 20, "resolution": 25, "compliance": 20}
@@ -65,6 +67,37 @@ def get_transcript(call_id: str) -> dict:
     }
 
 
+def transcribe_call(call_id: str) -> dict:
+    """Transcribe the recording with Azure AI Speech. This is where a review starts."""
+    call = _find(call_id)
+    if not call:
+        return {"error": f"No call found with id {call_id}. Use list_calls to see valid ids."}
+    try:
+        result = speech.transcribe(call["call_id"])
+    except speech.TranscriptionError as exc:
+        # Hand the reason back to the agent so it can say what went wrong and fall back.
+        return {
+            "error": str(exc),
+            "call_id": call["call_id"],
+            "fallback": "Call get_transcript for the stored reference transcript instead, "
+                        "and say in your report that you reviewed text rather than audio.",
+        }
+    return {
+        "call_id": result["call_id"],
+        "agent_id": call["agent_id"],
+        "agent_name": call["agent_name"],
+        "campaign": call["campaign"],
+        "date": call["date"],
+        "source": result["source"],
+        "duration_seconds": result["duration_seconds"],
+        "speaker_mapping": result["speaker_mapping"],
+        "transcript": [
+            {"speaker": t["speaker"], "at": t["at"], "text": _mask(t["text"])}
+            for t in result["transcript"]
+        ],
+    }
+
+
 def log_qa_score(call_id: str, scores: dict, total: int, summary: str) -> dict:
     if not _find(call_id):
         return {"error": f"No call found with id {call_id}."}
@@ -101,6 +134,7 @@ def create_coaching_task(agent_id: str, theme: str, call_ids: list, recommendati
 
 IMPLEMENTATIONS = {
     "list_calls": list_calls,
+    "transcribe_call": transcribe_call,
     "get_transcript": get_transcript,
     "log_qa_score": log_qa_score,
     "flag_compliance_issue": flag_compliance_issue,
@@ -136,8 +170,25 @@ TOOL_SPECS = [
         },
     },
     {
+        "name": "transcribe_call",
+        "description": (
+            "Transcribe the audio recording of a call with Azure AI Speech, with each turn "
+            "labelled by speaker and timestamped. Use this first when reviewing a call. "
+            "Account and card numbers are masked."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {"call_id": {"type": "string", "description": "Call id, for example C-5531."}},
+            "required": ["call_id"],
+            "additionalProperties": False,
+        },
+    },
+    {
         "name": "get_transcript",
-        "description": "Get the full transcript of a recorded call. Account and card numbers are masked.",
+        "description": (
+            "Get the stored reference transcript of a call, typed up in advance. Use only if "
+            "transcribe_call fails. Account and card numbers are masked."
+        ),
         "parameters": {
             "type": "object",
             "properties": {"call_id": {"type": "string", "description": "Call id, for example C-5531."}},

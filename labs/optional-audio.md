@@ -1,8 +1,15 @@
-# Optional: generate AI call recordings
+# Optional: regenerate the AI call recordings
 
-Turn the five fictional transcripts into audio with Azure AI Speech text to speech, so the web
-app can play each call before the agent reviews it. Taglish calls use Filipino voices and English
-calls use Philippine English voices.
+The workshop ships with five recordings in `src/audio/`, so you do not need this lab to hear the
+calls or to run the agent — `transcribe_call` works against the files that are already there.
+
+Use this lab when you want to change the voices: swap the Filipino and Philippine English voices
+for your own market, re-record a transcript you edited, or generate a sixth call of your own. It
+turns the transcripts in `api/qa_agent/data/calls.json` back into audio with Azure AI Speech text
+to speech, overwriting what is in `src/audio/`.
+
+Re-run `python scripts/transcribe_calls.py --force` afterwards, or the agent keeps using the
+transcripts cached from the old audio.
 
 ## 1. Get a Speech key
 In the Azure portal, open your Foundry resource (or any Azure AI Speech resource) and go to

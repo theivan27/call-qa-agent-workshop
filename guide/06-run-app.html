@@ -97,11 +97,37 @@
         <figcaption>Open in Browser on port 4280. Missed the toast? Use the <strong>Ports</strong> tab.</figcaption>
       </figure>
 
-      <h2>5. Review a call</h2>
+      <h2>5. Listen to a call</h2>
+      <p>
+        Each call in the list has a player under it. These are the five recordings in
+        <code>src/audio/</code>, and they are what the agent actually reviews &mdash; it
+        transcribes the audio with Azure AI Speech rather than reading a transcript somebody
+        typed up in advance.
+      </p>
+      <p>
+        Play thirty seconds of <code>C-5533</code> before you review it. Hearing the call first
+        makes the score the agent gives it mean something, and it is the fastest way to spot a
+        review that has gone wrong.
+      </p>
+      <div class="note">
+        <span class="note-title">Transcribe them up front</span>
+        <p>
+          The first review of a call waits a few seconds for transcription. Do all five now and
+          every review afterwards is instant:
+        </p>
+        <p class="where">In a second terminal</p>
+        <pre><code>python scripts/transcribe_calls.py</code></pre>
+        <p>
+          Transcripts are cached in <code>api/qa_agent/data/transcripts/</code>. Commit them and
+          your deployed app uses them too, instead of calling Speech again.
+        </p>
+      </div>
+
+      <h2>6. Review a call</h2>
       <ol>
         <li>Pick a call from <strong>Calls to review</strong> on the left.</li>
         <li>Send the suggested request.</li>
-        <li>Watch <strong>What the agent did</strong> on the right.</li>
+        <li>Watch <strong>What the agent did</strong> on the right &mdash; <code>transcribe_call</code> runs first.</li>
       </ol>
       <p>
         That third panel is the point of this app. Every transcript read, knowledge search, saved
@@ -199,7 +225,7 @@
           <p>
             Reviewing several calls at once means many model calls in sequence. Start with one call.
             Note the limit for later: once deployed, the built-in API cuts requests off at about 45
-            seconds, which <a href="07-deploy-portal.html">Step 7</a> comes back to.
+            seconds, which <a href="07-deploy-codespace.html">Step 7</a> comes back to.
           </p>
         </div>
       </details>

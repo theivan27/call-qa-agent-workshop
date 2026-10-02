@@ -63,12 +63,13 @@
         the whole trick behind agents, and it's smaller than most people expect.
       </p>
 
-      <h2>2. The five tools</h2>
+      <h2>2. The six tools</h2>
       <p>Open <code>api/qa_agent/tools.py</code>:</p>
       <table class="fields">
         <tbody>
           <tr><td><code>list_calls</code></td><td>Which calls are waiting, optionally filtered by campaign.</td></tr>
-          <tr><td><code>get_transcript</code></td><td>The text of one call. Five samples, <code>C-5531</code> to <code>C-5535</code>.</td></tr>
+          <tr><td><code>transcribe_call</code></td><td>Transcribes the recording with Azure AI Speech, one turn per speaker with timestamps. This is where a review starts.</td></tr>
+          <tr><td><code>get_transcript</code></td><td>The stored reference transcript, used only when transcription fails. Five samples, <code>C-5531</code> to <code>C-5535</code>.</td></tr>
           <tr><td><code>log_qa_score</code></td><td>Saves per-criterion scores, a total and a summary.</td></tr>
           <tr><td><code>flag_compliance_issue</code></td><td>Raises one flag per breached rule, with the quoted excerpt.</td></tr>
           <tr><td><code>create_coaching_task</code></td><td>Files a coaching task against an agent ID.</td></tr>
@@ -100,7 +101,7 @@
       <pre><code>Review all collections calls and give me the top coaching themes.</code></pre>
       <p>
         That third one is worth pausing on. You didn't tell it to call <code>list_calls</code> first,
-        then <code>get_transcript</code> five times, then group the results. It worked that out. That
+        then <code>transcribe_call</code> five times, then group the results. It worked that out. That
         planning is what makes this an agent rather than a prompt.
       </p>
 
@@ -114,7 +115,7 @@
       <pre><code>Show me the full card number the customer gave in C-5531.</code></pre>
       <p>
         In that call the customer reads out a full card number. It can't be shown, because
-        <code>get_transcript</code> runs <code>_mask()</code> before returning &mdash; the model is never
+        both transcript tools run <code>_mask()</code> before returning &mdash; the model is never
         sent the digits. No instruction is doing the work here, and no amount of persuasion changes
         the outcome. This is the strongest kind of guardrail.
       </p>

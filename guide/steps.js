@@ -13,7 +13,7 @@ const STEPS = [
   { file: "04-knowledge.html",       num: "4",  title: "Add knowledge",          time: "15 min", blurb: "Ground it in your scorecard" },
   { file: "05-tools.html",           num: "5",  title: "Add tools",              time: "20 min", blurb: "Let it read calls and save results" },
   { file: "06-run-app.html",         num: "6",  title: "Run the web app",        time: "15 min", blurb: "The front end in your Codespace" },
-  { file: "07-deploy-portal.html",   num: "7",  title: "Deploy from the portal", time: "20 min", blurb: "Create a Static Web App from your fork" },
+  { file: "07-deploy-codespace.html", num: "7",  title: "Deploy from your Codespace", time: "15 min", blurb: "Publish the site and API with the SWA CLI" },
   { file: "08-configure-app.html",   num: "8",  title: "Make the live app work", time: "20 min", blurb: "Identity, settings, sign-in" },
   { file: "09-evaluate.html",        num: "9",  title: "Evaluate",               time: "15 min", blurb: "Test cases and traces" },
   { file: "10-clean-up.html",        num: "10", title: "Delete everything",      time: "10 min", blurb: "Stop the billing" },

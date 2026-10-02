@@ -149,12 +149,50 @@ def check_project() -> bool:
     return True
 
 
+def check_recordings() -> bool:
+    print("\n5. Call recordings and Azure AI Speech")
+    from qa_agent import speech
+    from qa_agent.tools import _calls
+
+    missing = [c["call_id"] for c in _calls()
+               if not (speech.LOCAL_AUDIO_DIR / f"{c['call_id']}.mp3").is_file()]
+    if missing:
+        fail(
+            f"no recording for {', '.join(missing)}",
+            "The mp3 files belong in src/audio/. Re-pull the repository, or regenerate them "
+            "with the optional audio lab (labs/optional-audio.md)",
+        )
+        return False
+    print(f"{OK} five recordings found in src/audio")
+
+    # Transcribing is what the agent does first, so prove the permission now rather than
+    # letting the first review fail in front of everyone.
+    first = _calls()[0]["call_id"]
+    try:
+        result = speech.transcribe(first)
+    except speech.TranscriptionError as exc:
+        text = str(exc)
+        if "Speech User" in text or "401" in text or "403" in text:
+            fail(
+                "Azure AI Speech refused the request",
+                "Add the Cognitive Services Speech User role to your account on the Foundry "
+                "resource (guide Step 1, section 6). Role changes take a minute to apply",
+            )
+        else:
+            fail(f"transcription failed: {text}", "See guide Step 6, section 5")
+        return False
+    where = "already cached" if result.get("cached") else "transcribed just now"
+    print(f"{OK} {first} {where}, {len(result['transcript'])} speaker turns")
+    return True
+
+
 def main() -> int:
     print("Checking your workshop environment")
     print("=" * 38)
 
     if check_env() and check_packages() and check_sign_in():
-        check_project()
+        if check_project():
+            check_recordings()
 
     print("\n" + "=" * 38)
     if failures:

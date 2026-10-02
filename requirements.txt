@@ -4,3 +4,4 @@ azure-identity
 openai
 python-dotenv
 azure-cognitiveservices-speech   # only for scripts/generate_audio.py (optional)
+requests
